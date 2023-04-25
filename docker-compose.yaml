@@ -1,0 +1,36 @@
+services:
+  otel-collector:
+    container_name: otel-collector
+    image: "otel/opentelemetry-collector:latest"
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - "./otel-collector-config.yaml:/etc/otel-collector-config.yaml"
+    depends_on:
+      - jaeger-all-in-one
+    networks:
+      - default
+
+  jaeger-all-in-one:
+    container_name: jaeger-all-in-one
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"
+    networks:
+      - default
+
+  server:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    container_name: server
+    ports:
+      - "8080:8080" #http
+      - "8081:8081" #grpc
+    networks:
+      - default
+    depends_on:
+      otel-collector:
+        condition: service_started
+
+networks:
+  default:

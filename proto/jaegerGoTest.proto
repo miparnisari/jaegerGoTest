@@ -1,0 +1,17 @@
+syntax = "proto3";
+package jaegerGoTest;
+option go_package = "github.com/miparnisari/jaegerGoTest";
+
+import "google/api/annotations.proto";
+
+message StringMessage {
+  string value = 1;
+}
+
+service JaegerGoTest {
+  rpc Test(StringMessage) returns (StringMessage) {
+    option (google.api.http) = {
+        get: "/test"
+    };
+  }
+}
