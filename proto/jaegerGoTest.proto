@@ -2,16 +2,42 @@ syntax = "proto3";
 package jaegerGoTest;
 option go_package = "github.com/miparnisari/jaegerGoTest";
 
+import "google/api/field_behavior.proto";
+import "validate/validate.proto";
 import "google/api/annotations.proto";
 
-message StringMessage {
+message GetStoreRequest {
+  string store_id = 1 [
+    json_name = "store_id",
+    (validate.rules).string = {pattern: "^[ABCDEFGHJKMNPQRSTVWXYZ0-9]{26}$"}
+  ];
+}
+
+message GetStoreResponse {
+  string value = 1;
+}
+
+message StreamedGetStoreRequest {
+  string store_id = 1 [
+    json_name = "store_id",
+    (validate.rules).string = {pattern: "^[ABCDEFGHJKMNPQRSTVWXYZ0-9]{26}$"}
+  ];
+}
+
+message StreamedGetStoreResponse {
   string value = 1;
 }
 
 service JaegerGoTest {
-  rpc Test(StringMessage) returns (StringMessage) {
+  rpc GetStoreID(GetStoreRequest) returns (GetStoreResponse) {
     option (google.api.http) = {
-        get: "/test"
+        get: "/{store_id}"
+    };
+  }
+
+  rpc StreamedGetStoreID(StreamedGetStoreRequest) returns (stream StreamedGetStoreResponse) {
+    option (google.api.http) = {
+      get: "/streamed/{store_id}"
     };
   }
 }

@@ -3,25 +3,28 @@ package main
 import (
 	"context"
 	"fmt"
+
+	"jaegerGoTest/interceptors"
+
+	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
-	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	jaegerGoTest "jaegerGoTest/proto/gen/proto"
-	"log"
+	"google.golang.org/grpc/status"
+
 	"net"
 	"net/http"
 	"os/signal"
 	"syscall"
-	"time"
+
+	jaegerGoTest "jaegerGoTest/proto/gen/proto"
 )
 
 var tracer = otel.Tracer("main")
@@ -63,12 +66,23 @@ func main() {
 
 	interceptors := []grpc.UnaryServerInterceptor{
 		otelgrpc.UnaryServerInterceptor(),
-		RateLimiterUnaryInterceptor(),
+		grpc_validator.UnaryServerInterceptor(),
+		storeid.NewStoreIDUnaryInterceptor(),
+	}
+
+	streamInterceptors := []grpc.StreamServerInterceptor{
+		otelgrpc.StreamServerInterceptor(),
+		grpc_validator.StreamServerInterceptor(),
+		storeid.NewStoreIDStreamingInterceptor(),
 	}
 
 	// Create gRPC server
 	service := &MyServer{}
-	grpcServer := grpc.NewServer(grpc.ChainUnaryInterceptor(interceptors...))
+	opts := []grpc.ServerOption{
+		grpc.ChainUnaryInterceptor(interceptors...),
+		grpc.ChainStreamInterceptor(streamInterceptors...),
+	}
+	grpcServer := grpc.NewServer(opts...)
 	jaegerGoTest.RegisterJaegerGoTestServer(grpcServer, service)
 
 	lis, err := net.Listen("tcp", "localhost:8081")
@@ -89,7 +103,20 @@ func main() {
 		grpc.WithUnaryInterceptor(otelgrpc.UnaryClientInterceptor()),
 	}
 
-	mux := runtime.NewServeMux()
+	muxOpts := []runtime.ServeMuxOption{
+		runtime.WithErrorHandler(func(ctx context.Context, sr *runtime.ServeMux, mm runtime.Marshaler, w http.ResponseWriter, r *http.Request, e error) {
+			fmt.Println("error handler called")
+			fmt.Println(e)
+			runtime.DefaultHTTPErrorHandler(ctx, sr, mm, w, r, e)
+		}),
+		runtime.WithStreamErrorHandler(func(ctx context.Context, e error) *status.Status {
+			fmt.Println("stream error handler called")
+			fmt.Println(e)
+			return runtime.DefaultStreamErrorHandler(ctx, e)
+		}),
+	}
+
+	mux := runtime.NewServeMux(muxOpts...)
 
 	// Create reverse proxy http -> GRPC
 	err = jaegerGoTest.RegisterJaegerGoTestHandlerFromEndpoint(ctx, mux, fmt.Sprintf("localhost:8081"), dialOpts)
@@ -117,55 +144,16 @@ func main() {
 	<-ctx.Done()
 }
 
-func RateLimiterUnaryInterceptor() grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-		err := take(ctx)
-		if err != nil {
-			return nil, err
-		}
-		return handler(ctx, req)
-	}
+func (s *MyServer) GetStoreID(ctx context.Context, in *jaegerGoTest.GetStoreRequest) (*jaegerGoTest.GetStoreResponse, error) {
+	_, span := tracer.Start(ctx, "GET /store-id")
+	defer span.End()
+	return &jaegerGoTest.GetStoreResponse{Value: "some data!"}, nil
 }
 
-func take(ctx context.Context) error {
-	_, span := tracer.Start(ctx, "rateLimit", trace.WithAttributes(
-		attribute.Bool("timed_out", false),
-	))
+func (s *MyServer) StreamedGetStoreID(in *jaegerGoTest.StreamedGetStoreRequest, stream jaegerGoTest.JaegerGoTest_StreamedGetStoreIDServer) error {
+	ctx := stream.Context()
+	_, span := tracer.Start(ctx, "GET /stream/store-id")
 	defer span.End()
-
-	channel := make(chan error, 1)
-
-	// Run the potentially long-running limiter function in its own goroutine and pass back the
-	// response into the channel
-	go func() {
-		channel <- runLimiter(ctx, span.SpanContext())
-	}()
-
-	// Listen on the limiter channel and a timeout channel - whichever happens first
-	// If the function times out, let the request go through
-	select {
-	case res := <-channel:
-		return res
-	case <-time.After(1 * time.Second):
-		log.Println(ctx, fmt.Sprintf("Limiter took more than 1 second to execute. Letting request through"))
-		span.SetAttributes(attribute.Bool("timed_out", true))
-		return nil
-	}
-}
-
-func runLimiter(ctx context.Context, parentSpanContext trace.SpanContext) error {
-	ctx, span := tracer.Start(ctx, "runLimiter", trace.WithLinks(trace.Link{
-		SpanContext: parentSpanContext,
-	}), trace.WithSpanKind(trace.SpanKindClient))
-	defer span.End()
-
-	// actually rate-limit here
 
 	return nil
-}
-
-func (s *MyServer) Test(ctx context.Context, in *jaegerGoTest.StringMessage) (*jaegerGoTest.StringMessage, error) {
-	_, span := tracer.Start(ctx, "GET /test")
-	defer span.End()
-	return &jaegerGoTest.StringMessage{Value: "done!"}, nil
 }

@@ -31,39 +31,89 @@ var _ = runtime.String
 var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
-var (
-	filter_JaegerGoTest_Test_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
-)
-
-func request_JaegerGoTest_Test_0(ctx context.Context, marshaler runtime.Marshaler, client JaegerGoTestClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq StringMessage
+func request_JaegerGoTest_GetStoreID_0(ctx context.Context, marshaler runtime.Marshaler, client JaegerGoTestClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetStoreRequest
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_JaegerGoTest_Test_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["store_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "store_id")
 	}
 
-	msg, err := client.Test(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	protoReq.StoreId, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "store_id", err)
+	}
+
+	msg, err := client.GetStoreID(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_JaegerGoTest_Test_0(ctx context.Context, marshaler runtime.Marshaler, server JaegerGoTestServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq StringMessage
+func local_request_JaegerGoTest_GetStoreID_0(ctx context.Context, marshaler runtime.Marshaler, server JaegerGoTestServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetStoreRequest
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_JaegerGoTest_Test_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["store_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "store_id")
 	}
 
-	msg, err := server.Test(ctx, &protoReq)
+	protoReq.StoreId, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "store_id", err)
+	}
+
+	msg, err := server.GetStoreID(ctx, &protoReq)
 	return msg, metadata, err
+
+}
+
+func request_JaegerGoTest_StreamedGetStoreID_0(ctx context.Context, marshaler runtime.Marshaler, client JaegerGoTestClient, req *http.Request, pathParams map[string]string) (JaegerGoTest_StreamedGetStoreIDClient, runtime.ServerMetadata, error) {
+	var protoReq StreamedGetStoreRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["store_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "store_id")
+	}
+
+	protoReq.StoreId, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "store_id", err)
+	}
+
+	stream, err := client.StreamedGetStoreID(ctx, &protoReq)
+	if err != nil {
+		return nil, metadata, err
+	}
+	header, err := stream.Header()
+	if err != nil {
+		return nil, metadata, err
+	}
+	metadata.HeaderMD = header
+	return stream, metadata, nil
 
 }
 
@@ -73,18 +123,18 @@ func local_request_JaegerGoTest_Test_0(ctx context.Context, marshaler runtime.Ma
 // Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterJaegerGoTestHandlerFromEndpoint instead.
 func RegisterJaegerGoTestHandlerServer(ctx context.Context, mux *runtime.ServeMux, server JaegerGoTestServer) error {
 
-	mux.Handle("GET", pattern_JaegerGoTest_Test_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_JaegerGoTest_GetStoreID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/jaegerGoTest.JaegerGoTest/Test")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/jaegerGoTest.JaegerGoTest/GetStoreID")
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_JaegerGoTest_Test_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_JaegerGoTest_GetStoreID_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -92,8 +142,15 @@ func RegisterJaegerGoTestHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			return
 		}
 
-		forward_JaegerGoTest_Test_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_JaegerGoTest_GetStoreID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
+	})
+
+	mux.Handle("GET", pattern_JaegerGoTest_StreamedGetStoreID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		err := status.Error(codes.Unimplemented, "streaming calls are not yet supported in the in-process transport")
+		_, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+		return
 	})
 
 	return nil
@@ -137,23 +194,43 @@ func RegisterJaegerGoTestHandler(ctx context.Context, mux *runtime.ServeMux, con
 // "JaegerGoTestClient" to call the correct interceptors.
 func RegisterJaegerGoTestHandlerClient(ctx context.Context, mux *runtime.ServeMux, client JaegerGoTestClient) error {
 
-	mux.Handle("GET", pattern_JaegerGoTest_Test_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_JaegerGoTest_GetStoreID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/jaegerGoTest.JaegerGoTest/Test")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/jaegerGoTest.JaegerGoTest/GetStoreID")
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_JaegerGoTest_Test_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_JaegerGoTest_GetStoreID_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_JaegerGoTest_Test_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_JaegerGoTest_GetStoreID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("GET", pattern_JaegerGoTest_StreamedGetStoreID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/jaegerGoTest.JaegerGoTest/StreamedGetStoreID")
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_JaegerGoTest_StreamedGetStoreID_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_JaegerGoTest_StreamedGetStoreID_0(ctx, mux, outboundMarshaler, w, req, func() (proto.Message, error) { return resp.Recv() }, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -161,9 +238,13 @@ func RegisterJaegerGoTestHandlerClient(ctx context.Context, mux *runtime.ServeMu
 }
 
 var (
-	pattern_JaegerGoTest_Test_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"test"}, ""))
+	pattern_JaegerGoTest_GetStoreID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{1, 0, 4, 1, 5, 0}, []string{"store_id"}, ""))
+
+	pattern_JaegerGoTest_StreamedGetStoreID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"streamed", "store_id"}, ""))
 )
 
 var (
-	forward_JaegerGoTest_Test_0 = runtime.ForwardResponseMessage
+	forward_JaegerGoTest_GetStoreID_0 = runtime.ForwardResponseMessage
+
+	forward_JaegerGoTest_StreamedGetStoreID_0 = runtime.ForwardResponseStream
 )

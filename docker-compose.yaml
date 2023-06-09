@@ -10,20 +10,6 @@ services:
     networks:
       - default
 
-  lightstep:
-    image: lightstep/developer-satellite:latest
-    container_name: lightstep
-    restart: always
-    networks:
-      - default
-    environment:
-      - 'COLLECTOR_PROJECT_NAME={PROJECT}'
-      - 'COLLECTOR_API_KEY={KEY}'
-      - 'COLLECTOR_ROUTING_TAGS=developer_name:{EMAIL},project_name:{PROJECT},developer_mode:true'
-      - 'COLLECTOR_HTTP_PLAIN_PORT=8360'
-      - 'COLLECTOR_ADMIN_PLAIN_PORT=8361'
-      - 'COLLECTOR_DISABLE_ACCESS_TOKEN_CHECKING=true'
-
   jaeger-all-in-one:
     container_name: jaeger-all-in-one
     image: jaegertracing/all-in-one:latest

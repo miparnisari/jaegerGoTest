@@ -13,3 +13,7 @@ plugins:
     opt:
       - paths=source_relative
       - generate_unbound_methods=true
+  - plugin: buf.build/bufbuild/validate-go
+    out: proto/gen
+    opt:
+      - paths=source_relative
