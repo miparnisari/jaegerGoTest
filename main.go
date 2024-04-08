@@ -6,6 +6,7 @@ import (
 
 	"jaegerGoTest/interceptors"
 
+	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
@@ -64,22 +65,30 @@ func main() {
 	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
 	otel.SetTracerProvider(tracerProvider)
 
-	interceptors := []grpc.UnaryServerInterceptor{
+	panicHandler := interceptors.PanicRecoveryHandler()
+
+	unaryInterceptors := []grpc.UnaryServerInterceptor{
+		grpc_recovery.UnaryServerInterceptor(
+			grpc_recovery.WithRecoveryHandlerContext(panicHandler),
+		),
 		otelgrpc.UnaryServerInterceptor(),
 		grpc_validator.UnaryServerInterceptor(),
-		storeid.NewStoreIDUnaryInterceptor(),
+		interceptors.NewStoreIDUnaryInterceptor(),
 	}
 
 	streamInterceptors := []grpc.StreamServerInterceptor{
+		grpc_recovery.StreamServerInterceptor(
+			grpc_recovery.WithRecoveryHandlerContext(panicHandler),
+		),
 		otelgrpc.StreamServerInterceptor(),
 		grpc_validator.StreamServerInterceptor(),
-		storeid.NewStoreIDStreamingInterceptor(),
+		interceptors.NewStoreIDStreamingInterceptor(),
 	}
 
 	// Create gRPC server
 	service := &MyServer{}
 	opts := []grpc.ServerOption{
-		grpc.ChainUnaryInterceptor(interceptors...),
+		grpc.ChainUnaryInterceptor(unaryInterceptors...),
 		grpc.ChainStreamInterceptor(streamInterceptors...),
 	}
 	grpcServer := grpc.NewServer(opts...)
@@ -105,13 +114,11 @@ func main() {
 
 	muxOpts := []runtime.ServeMuxOption{
 		runtime.WithErrorHandler(func(ctx context.Context, sr *runtime.ServeMux, mm runtime.Marshaler, w http.ResponseWriter, r *http.Request, e error) {
-			fmt.Println("error handler called")
-			fmt.Println(e)
+			fmt.Println("error handler called", e)
 			runtime.DefaultHTTPErrorHandler(ctx, sr, mm, w, r, e)
 		}),
 		runtime.WithStreamErrorHandler(func(ctx context.Context, e error) *status.Status {
-			fmt.Println("stream error handler called")
-			fmt.Println(e)
+			fmt.Println("stream error handler called", e)
 			return runtime.DefaultStreamErrorHandler(ctx, e)
 		}),
 	}
@@ -145,6 +152,7 @@ func main() {
 }
 
 func (s *MyServer) GetStoreID(ctx context.Context, in *jaegerGoTest.GetStoreRequest) (*jaegerGoTest.GetStoreResponse, error) {
+	causePanic()
 	_, span := tracer.Start(ctx, "GET /store-id")
 	defer span.End()
 	return &jaegerGoTest.GetStoreResponse{Value: "some data!"}, nil
@@ -156,4 +164,9 @@ func (s *MyServer) StreamedGetStoreID(in *jaegerGoTest.StreamedGetStoreRequest, 
 	defer span.End()
 
 	return nil
+}
+
+func causePanic() {
+	array := make([]string, 0)
+	fmt.Println(array[0])
 }

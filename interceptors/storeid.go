@@ -1,4 +1,4 @@
-package storeid
+package interceptors
 
 import (
 	"context"
