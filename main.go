@@ -35,6 +35,12 @@ type MyServer struct {
 }
 
 func main() {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in f", r)
+		}
+	}()
+
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
@@ -42,7 +48,7 @@ func main() {
 		ctx,
 		otlptracegrpc.WithInsecure(),
 		otlptracegrpc.WithEndpoint("otel-collector:4317"),
-		otlptracegrpc.WithDialOption(grpc.WithBlock()),
+		//otlptracegrpc.WithDialOption(grpc.WithBlock()),
 	)
 	if err != nil {
 		panic(err)
@@ -169,4 +175,10 @@ func (s *MyServer) StreamedGetStoreID(in *jaegerGoTest.StreamedGetStoreRequest, 
 func causePanic() {
 	array := make([]string, 0)
 	fmt.Println(array[0])
+}
+
+func causePanicWithinGoroutine() {
+	go func() {
+		causePanic()
+	}()
 }
