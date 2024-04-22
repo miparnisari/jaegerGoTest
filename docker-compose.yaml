@@ -49,6 +49,9 @@ services:
     environment:
       - OPENFGA_DATASTORE_ENGINE=memory
       - OPENFGA_GRPC_ADDR=0.0.0.0:8085
+      - OPENFGA_TRACE_OTLP_ENDPOINT=otel-collector-demo:4317
+      - OPENFGA_TRACE_ENABLED=true
+      - OPENFGA_TRACE_SAMPLE_RATIO=1
     networks:
       - default
     ports:
