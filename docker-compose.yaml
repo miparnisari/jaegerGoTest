@@ -42,6 +42,18 @@ services:
       otel-collector-demo:
         condition: service_started
 
+  openfga-demo:
+    container_name: openfga-demo
+    image: openfga/openfga:latest
+    command: run
+    environment:
+      - OPENFGA_DATASTORE_ENGINE=memory
+      - OPENFGA_GRPC_ADDR=0.0.0.0:8085
+    networks:
+      - default
+    ports:
+      - "8085:8085" #grpc
+
 networks:
   default:
 

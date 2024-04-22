@@ -3,12 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"jaegerGoTest/interceptors"
 
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	openfgav1 "github.com/openfga/api/proto/openfga/v1"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
@@ -48,7 +50,7 @@ func main() {
 		ctx,
 		otlptracegrpc.WithInsecure(),
 		otlptracegrpc.WithEndpoint("otel-collector-demo:4317"),
-		//otlptracegrpc.WithDialOption(grpc.WithBlock()),
+		otlptracegrpc.WithDialOption(grpc.WithBlock()),
 	)
 	if err != nil {
 		panic(err)
@@ -77,7 +79,6 @@ func main() {
 		grpc_recovery.UnaryServerInterceptor(
 			grpc_recovery.WithRecoveryHandlerContext(panicHandler),
 		),
-		otelgrpc.UnaryServerInterceptor(),
 		grpc_validator.UnaryServerInterceptor(),
 		interceptors.NewStoreIDUnaryInterceptor(),
 	}
@@ -86,7 +87,6 @@ func main() {
 		grpc_recovery.StreamServerInterceptor(
 			grpc_recovery.WithRecoveryHandlerContext(panicHandler),
 		),
-		otelgrpc.StreamServerInterceptor(),
 		grpc_validator.StreamServerInterceptor(),
 		interceptors.NewStoreIDStreamingInterceptor(),
 	}
@@ -96,6 +96,7 @@ func main() {
 	opts := []grpc.ServerOption{
 		grpc.ChainUnaryInterceptor(unaryInterceptors...),
 		grpc.ChainStreamInterceptor(streamInterceptors...),
+		grpc.StatsHandler(otelgrpc.NewServerHandler()),
 	}
 	grpcServer := grpc.NewServer(opts...)
 	jaegerGoTest.RegisterJaegerGoTestServer(grpcServer, service)
@@ -115,7 +116,6 @@ func main() {
 	dialOpts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithBlock(),
-		grpc.WithUnaryInterceptor(otelgrpc.UnaryClientInterceptor()),
 	}
 
 	muxOpts := []runtime.ServeMuxOption{
@@ -158,8 +158,24 @@ func main() {
 }
 
 func (s *MyServer) GetStoreID(ctx context.Context, in *jaegerGoTest.GetStoreRequest) (*jaegerGoTest.GetStoreResponse, error) {
-	_, span := tracer.Start(ctx, "GET /store-id")
+	ctx, span := tracer.Start(ctx, "GET /store-id")
 	defer span.End()
+
+	conn, err := grpc.NewClient("openfga-demo:8085",
+		grpc.WithBlock(),
+		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fgaClient := openfgav1.NewOpenFGAServiceClient(conn)
+	_, err = fgaClient.CreateStore(ctx, &openfgav1.CreateStoreRequest{
+		Name: "openfga-demo",
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
 	return &jaegerGoTest.GetStoreResponse{Value: "some data!"}, nil
 }
 
