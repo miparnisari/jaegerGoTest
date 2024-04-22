@@ -47,7 +47,7 @@ func main() {
 	traceExporter, err := otlptracegrpc.New(
 		ctx,
 		otlptracegrpc.WithInsecure(),
-		otlptracegrpc.WithEndpoint("otel-collector:4317"),
+		otlptracegrpc.WithEndpoint("otel-collector-demo:4317"),
 		//otlptracegrpc.WithDialOption(grpc.WithBlock()),
 	)
 	if err != nil {
@@ -158,7 +158,6 @@ func main() {
 }
 
 func (s *MyServer) GetStoreID(ctx context.Context, in *jaegerGoTest.GetStoreRequest) (*jaegerGoTest.GetStoreResponse, error) {
-	causePanic()
 	_, span := tracer.Start(ctx, "GET /store-id")
 	defer span.End()
 	return &jaegerGoTest.GetStoreResponse{Value: "some data!"}, nil

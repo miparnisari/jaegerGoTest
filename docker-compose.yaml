@@ -1,20 +1,30 @@
 services:
-  otel-collector:
-    container_name: otel-collector
+  otel-collector-demo:
+    container_name: otel-collector-demo
     image: "otel/opentelemetry-collector:latest"
     command: ["--config=/etc/otel-collector-config.yaml"]
     volumes:
       - "./otel-collector-config.yaml:/etc/otel-collector-config.yaml"
-    depends_on:
-      - jaeger-all-in-one
     networks:
       - default
 
-  jaeger-all-in-one:
-    container_name: jaeger-all-in-one
-    image: jaegertracing/all-in-one:latest
+  jaeger-demo:
+    image: jaegertracing/all-in-one:1.49
+    container_name: jaeger-demo
+    command: [ "--query.max-clock-skew-adjustment", "500ms" ]
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - SPAN_STORAGE_TYPE=badger
+      - BADGER_EPHEMERAL=false
+      - BADGER_DIRECTORY_VALUE=/badger/data
+      - BADGER_DIRECTORY_KEY=/badger/key
+    volumes:
+      - jaeger_data:/badger
     ports:
-      - "16686:16686"
+      - "16686:16686" # UI
+      - "4317" # OTLP gRPC default port
+    depends_on:
+      - otel-collector-demo
     networks:
       - default
 
@@ -29,8 +39,11 @@ services:
     networks:
       - default
     depends_on:
-      otel-collector:
+      otel-collector-demo:
         condition: service_started
 
 networks:
   default:
+
+volumes:
+  jaeger_data:

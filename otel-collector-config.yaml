@@ -2,11 +2,11 @@ receivers:
   otlp:
     protocols:
       grpc:
-      http:
+        endpoint: "otel-collector-demo:4317"
 
 exporters:
   otlp:
-    endpoint: jaeger-all-in-one:14250
+    endpoint: jaeger-demo:4317
     tls:
       insecure: true
   logging:
