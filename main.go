@@ -7,8 +7,8 @@ import (
 
 	"jaegerGoTest/interceptors"
 
-	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
-	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
+	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
+	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/validator"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/otel"
@@ -75,18 +75,18 @@ func main() {
 	panicHandler := interceptors.PanicRecoveryHandler()
 
 	unaryInterceptors := []grpc.UnaryServerInterceptor{
-		grpc_recovery.UnaryServerInterceptor(
-			grpc_recovery.WithRecoveryHandlerContext(panicHandler),
+		recovery.UnaryServerInterceptor(
+			recovery.WithRecoveryHandlerContext(panicHandler),
 		),
-		grpc_validator.UnaryServerInterceptor(),
+		validator.UnaryServerInterceptor(),
 		interceptors.NewStoreIDUnaryInterceptor(),
 	}
 
 	streamInterceptors := []grpc.StreamServerInterceptor{
-		grpc_recovery.StreamServerInterceptor(
-			grpc_recovery.WithRecoveryHandlerContext(panicHandler),
+		recovery.StreamServerInterceptor(
+			recovery.WithRecoveryHandlerContext(panicHandler),
 		),
-		grpc_validator.StreamServerInterceptor(),
+		validator.StreamServerInterceptor(),
 		interceptors.NewStoreIDStreamingInterceptor(),
 	}
 

@@ -4,10 +4,8 @@ go 1.21.3
 
 require (
 	github.com/envoyproxy/protoc-gen-validate v1.0.4
-	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
-	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.0.0-rc.5
+	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.1.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.19.1
-	github.com/openfga/api/proto v0.0.0-20240422161739-606bd34a3d55
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.50.0
 	go.opentelemetry.io/otel v1.25.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.25.0
