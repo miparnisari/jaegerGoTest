@@ -33,7 +33,7 @@ func (r *reporter) PostMsgSend(interface{}, error, time.Duration) {}
 func (r *reporter) PostMsgReceive(msg interface{}, err error, _ time.Duration) {
 	if m, ok := msg.(hasGetStoreID); ok {
 		storeID := m.GetStoreId()
-		fmt.Println("setting header...")
+		fmt.Println("setting header store-id")
 		grpc.SetHeader(r.ctx, metadata.Pairs("store-id-header", storeID))
 	}
 }

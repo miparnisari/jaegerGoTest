@@ -3,14 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
+	"time"
 
 	"jaegerGoTest/interceptors"
 
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	openfgav1 "github.com/openfga/api/proto/openfga/v1"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
@@ -129,6 +128,7 @@ func main() {
 		}),
 	}
 
+	runtime.DefaultContextTimeout = 50 * time.Millisecond
 	mux := runtime.NewServeMux(muxOpts...)
 
 	// Create reverse proxy http -> GRPC
@@ -161,21 +161,8 @@ func (s *MyServer) GetStoreID(ctx context.Context, in *jaegerGoTest.GetStoreRequ
 	ctx, span := tracer.Start(ctx, "GET /store-id")
 	defer span.End()
 
-	conn, err := grpc.NewClient("openfga-demo:8085",
-		grpc.WithBlock(),
-		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fgaClient := openfgav1.NewOpenFGAServiceClient(conn)
-	_, err = fgaClient.CreateStore(ctx, &openfgav1.CreateStoreRequest{
-		Name: "openfga-demo",
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
+	// more than the timeout
+	time.Sleep(1 * time.Second)
 	return &jaegerGoTest.GetStoreResponse{Value: "some data!"}, nil
 }
 
@@ -185,15 +172,4 @@ func (s *MyServer) StreamedGetStoreID(in *jaegerGoTest.StreamedGetStoreRequest, 
 	defer span.End()
 
 	return nil
-}
-
-func causePanic() {
-	array := make([]string, 0)
-	fmt.Println(array[0])
-}
-
-func causePanicWithinGoroutine() {
-	go func() {
-		causePanic()
-	}()
 }
