@@ -1,33 +1,4 @@
 services:
-  otel-collector-demo:
-    container_name: otel-collector-demo
-    image: "otel/opentelemetry-collector:latest"
-    command: ["--config=/etc/otel-collector-config.yaml"]
-    volumes:
-      - "./otel-collector-config.yaml:/etc/otel-collector-config.yaml"
-    networks:
-      - default
-
-  jaeger-demo:
-    image: jaegertracing/all-in-one:1.49
-    container_name: jaeger-demo
-    command: [ "--query.max-clock-skew-adjustment", "500ms" ]
-    environment:
-      - COLLECTOR_OTLP_ENABLED=true
-      - SPAN_STORAGE_TYPE=badger
-      - BADGER_EPHEMERAL=false
-      - BADGER_DIRECTORY_VALUE=/badger/data
-      - BADGER_DIRECTORY_KEY=/badger/key
-    volumes:
-      - jaeger_data:/badger
-    ports:
-      - "16686:16686" # UI
-      - "4317" # OTLP gRPC default port
-    depends_on:
-      - otel-collector-demo
-    networks:
-      - default
-
   server:
     build:
       context: ./
@@ -36,29 +7,3 @@ services:
     ports:
       - "8080:8080" #http
       - "8081:8081" #grpc
-    networks:
-      - default
-    depends_on:
-      otel-collector-demo:
-        condition: service_started
-
-  openfga-demo:
-    container_name: openfga-demo
-    image: openfga/openfga:latest
-    command: run
-    environment:
-      - OPENFGA_DATASTORE_ENGINE=memory
-      - OPENFGA_GRPC_ADDR=0.0.0.0:8085
-      - OPENFGA_TRACE_OTLP_ENDPOINT=otel-collector-demo:4317
-      - OPENFGA_TRACE_ENABLED=true
-      - OPENFGA_TRACE_SAMPLE_RATIO=1
-    networks:
-      - default
-    ports:
-      - "8085:8085" #grpc
-
-networks:
-  default:
-
-volumes:
-  jaeger_data:

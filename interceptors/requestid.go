@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors"
+	"github.com/oklog/ulid/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -18,10 +19,6 @@ func NewStoreIDStreamingInterceptor() grpc.StreamServerInterceptor {
 	return interceptors.StreamServerInterceptor(reportable())
 }
 
-type hasGetStoreID interface {
-	GetStoreId() string
-}
-
 type reporter struct {
 	ctx context.Context
 }
@@ -31,10 +28,12 @@ func (r *reporter) PostCall(error, time.Duration) {}
 func (r *reporter) PostMsgSend(interface{}, error, time.Duration) {}
 
 func (r *reporter) PostMsgReceive(msg interface{}, err error, _ time.Duration) {
-	if m, ok := msg.(hasGetStoreID); ok {
-		storeID := m.GetStoreId()
-		fmt.Println("setting header store-id")
-		grpc.SetHeader(r.ctx, metadata.Pairs("store-id-header", storeID))
+	requestID := ulid.Make().String()
+	err = grpc.SetHeader(r.ctx, metadata.Pairs("request-id", requestID))
+	if err != nil {
+		fmt.Println("error setting header", err)
+	} else {
+		fmt.Println("set header request-id")
 	}
 }
 

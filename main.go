@@ -7,16 +7,7 @@ import (
 
 	"jaegerGoTest/interceptors"
 
-	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
-	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/validator"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
-	"go.opentelemetry.io/otel/propagation"
-	"go.opentelemetry.io/otel/sdk/resource"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
@@ -29,64 +20,19 @@ import (
 	jaegerGoTest "jaegerGoTest/proto/gen/proto"
 )
 
-var tracer = otel.Tracer("main")
-
 type MyServer struct {
 	jaegerGoTest.UnimplementedJaegerGoTestServer
 }
 
 func main() {
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Println("Recovered in f", r)
-		}
-	}()
-
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	traceExporter, err := otlptracegrpc.New(
-		ctx,
-		otlptracegrpc.WithInsecure(),
-		otlptracegrpc.WithEndpoint("otel-collector-demo:4317"),
-		otlptracegrpc.WithDialOption(grpc.WithBlock()),
-	)
-	if err != nil {
-		panic(err)
-	}
-
-	res, err := resource.Merge(
-		resource.Default(),
-		resource.NewSchemaless(
-			semconv.ServiceNameKey.String("jaegerGoTest"),
-		))
-	if err != nil {
-		panic(err)
-	}
-
-	tracerProvider := sdktrace.NewTracerProvider(
-		sdktrace.WithSampler(sdktrace.ParentBased(sdktrace.TraceIDRatioBased(1))),
-		sdktrace.WithResource(res),
-		sdktrace.WithSpanProcessor(sdktrace.NewBatchSpanProcessor(traceExporter)),
-	)
-	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
-	otel.SetTracerProvider(tracerProvider)
-
-	panicHandler := interceptors.PanicRecoveryHandler()
-
 	unaryInterceptors := []grpc.UnaryServerInterceptor{
-		recovery.UnaryServerInterceptor(
-			recovery.WithRecoveryHandlerContext(panicHandler),
-		),
-		validator.UnaryServerInterceptor(),
 		interceptors.NewStoreIDUnaryInterceptor(),
 	}
 
 	streamInterceptors := []grpc.StreamServerInterceptor{
-		recovery.StreamServerInterceptor(
-			recovery.WithRecoveryHandlerContext(panicHandler),
-		),
-		validator.StreamServerInterceptor(),
 		interceptors.NewStoreIDStreamingInterceptor(),
 	}
 
@@ -95,7 +41,6 @@ func main() {
 	opts := []grpc.ServerOption{
 		grpc.ChainUnaryInterceptor(unaryInterceptors...),
 		grpc.ChainStreamInterceptor(streamInterceptors...),
-		grpc.StatsHandler(otelgrpc.NewServerHandler()),
 	}
 	grpcServer := grpc.NewServer(opts...)
 	jaegerGoTest.RegisterJaegerGoTestServer(grpcServer, service)
@@ -143,7 +88,6 @@ func main() {
 	}
 
 	httpServer.RegisterOnShutdown(func() {
-		tracerProvider.ForceFlush(ctx)
 		grpcServer.GracefulStop()
 	})
 
@@ -158,18 +102,11 @@ func main() {
 }
 
 func (s *MyServer) GetStoreID(ctx context.Context, in *jaegerGoTest.GetStoreRequest) (*jaegerGoTest.GetStoreResponse, error) {
-	ctx, span := tracer.Start(ctx, "GET /store-id")
-	defer span.End()
-
 	// more than the timeout
 	time.Sleep(1 * time.Second)
 	return &jaegerGoTest.GetStoreResponse{Value: "some data!"}, nil
 }
 
 func (s *MyServer) StreamedGetStoreID(in *jaegerGoTest.StreamedGetStoreRequest, stream jaegerGoTest.JaegerGoTest_StreamedGetStoreIDServer) error {
-	ctx := stream.Context()
-	_, span := tracer.Start(ctx, "GET /stream/store-id")
-	defer span.End()
-
 	return nil
 }
