@@ -23,27 +23,26 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type StreamedGetStoreRequest struct {
+type StreamedContinuousRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	StoreId       string                 `protobuf:"bytes,1,opt,name=store_id,proto3" json:"store_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *StreamedGetStoreRequest) Reset() {
-	*x = StreamedGetStoreRequest{}
+func (x *StreamedContinuousRequest) Reset() {
+	*x = StreamedContinuousRequest{}
 	mi := &file_proto_jaegerGoTest_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *StreamedGetStoreRequest) String() string {
+func (x *StreamedContinuousRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*StreamedGetStoreRequest) ProtoMessage() {}
+func (*StreamedContinuousRequest) ProtoMessage() {}
 
-func (x *StreamedGetStoreRequest) ProtoReflect() protoreflect.Message {
+func (x *StreamedContinuousRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_jaegerGoTest_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -55,39 +54,32 @@ func (x *StreamedGetStoreRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use StreamedGetStoreRequest.ProtoReflect.Descriptor instead.
-func (*StreamedGetStoreRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use StreamedContinuousRequest.ProtoReflect.Descriptor instead.
+func (*StreamedContinuousRequest) Descriptor() ([]byte, []int) {
 	return file_proto_jaegerGoTest_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *StreamedGetStoreRequest) GetStoreId() string {
-	if x != nil {
-		return x.StoreId
-	}
-	return ""
-}
-
-type StreamedGetStoreResponse struct {
+type StreamedContinuousResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Value         int32                  `protobuf:"varint,1,opt,name=value,proto3" json:"value,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *StreamedGetStoreResponse) Reset() {
-	*x = StreamedGetStoreResponse{}
+func (x *StreamedContinuousResponse) Reset() {
+	*x = StreamedContinuousResponse{}
 	mi := &file_proto_jaegerGoTest_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *StreamedGetStoreResponse) String() string {
+func (x *StreamedContinuousResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*StreamedGetStoreResponse) ProtoMessage() {}
+func (*StreamedContinuousResponse) ProtoMessage() {}
 
-func (x *StreamedGetStoreResponse) ProtoReflect() protoreflect.Message {
+func (x *StreamedContinuousResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_jaegerGoTest_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -99,12 +91,92 @@ func (x *StreamedGetStoreResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use StreamedGetStoreResponse.ProtoReflect.Descriptor instead.
-func (*StreamedGetStoreResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use StreamedContinuousResponse.ProtoReflect.Descriptor instead.
+func (*StreamedContinuousResponse) Descriptor() ([]byte, []int) {
 	return file_proto_jaegerGoTest_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *StreamedGetStoreResponse) GetValue() int32 {
+func (x *StreamedContinuousResponse) GetValue() int32 {
+	if x != nil {
+		return x.Value
+	}
+	return 0
+}
+
+type StreamedSporadicRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StreamedSporadicRequest) Reset() {
+	*x = StreamedSporadicRequest{}
+	mi := &file_proto_jaegerGoTest_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StreamedSporadicRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StreamedSporadicRequest) ProtoMessage() {}
+
+func (x *StreamedSporadicRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_jaegerGoTest_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StreamedSporadicRequest.ProtoReflect.Descriptor instead.
+func (*StreamedSporadicRequest) Descriptor() ([]byte, []int) {
+	return file_proto_jaegerGoTest_proto_rawDescGZIP(), []int{2}
+}
+
+type StreamedSporadicResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Value         int32                  `protobuf:"varint,1,opt,name=value,proto3" json:"value,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StreamedSporadicResponse) Reset() {
+	*x = StreamedSporadicResponse{}
+	mi := &file_proto_jaegerGoTest_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StreamedSporadicResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StreamedSporadicResponse) ProtoMessage() {}
+
+func (x *StreamedSporadicResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_jaegerGoTest_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StreamedSporadicResponse.ProtoReflect.Descriptor instead.
+func (*StreamedSporadicResponse) Descriptor() ([]byte, []int) {
+	return file_proto_jaegerGoTest_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *StreamedSporadicResponse) GetValue() int32 {
 	if x != nil {
 		return x.Value
 	}
@@ -115,13 +187,16 @@ var File_proto_jaegerGoTest_proto protoreflect.FileDescriptor
 
 const file_proto_jaegerGoTest_proto_rawDesc = "" +
 	"\n" +
-	"\x18proto/jaegerGoTest.proto\x12\fjaegerGoTest\x1a\x1fgoogle/api/field_behavior.proto\x1a\x17validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\"_\n" +
-	"\x17StreamedGetStoreRequest\x12D\n" +
-	"\bstore_id\x18\x01 \x01(\tB(\xfaB%r#2!^[ABCDEFGHJKMNPQRSTVWXYZ0-9]{26}$R\bstore_id\"0\n" +
-	"\x18StreamedGetStoreResponse\x12\x14\n" +
-	"\x05value\x18\x01 \x01(\x05R\x05value2\x88\x01\n" +
-	"\fJaegerGoTest\x12x\n" +
-	"\x12StreamedGetStoreID\x12%.jaegerGoTest.StreamedGetStoreRequest\x1a&.jaegerGoTest.StreamedGetStoreResponse\"\x11\x82\xd3\xe4\x93\x02\v\x12\t/streamed0\x01B%Z#github.com/miparnisari/jaegerGoTestb\x06proto3"
+	"\x18proto/jaegerGoTest.proto\x12\fjaegerGoTest\x1a\x1fgoogle/api/field_behavior.proto\x1a\x17validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\"\x1b\n" +
+	"\x19StreamedContinuousRequest\"2\n" +
+	"\x1aStreamedContinuousResponse\x12\x14\n" +
+	"\x05value\x18\x01 \x01(\x05R\x05value\"\x19\n" +
+	"\x17StreamedSporadicRequest\"0\n" +
+	"\x18StreamedSporadicResponse\x12\x14\n" +
+	"\x05value\x18\x01 \x01(\x05R\x05value2\x99\x02\n" +
+	"\fJaegerGoTest\x12\x87\x01\n" +
+	"\x12StreamedContinuous\x12'.jaegerGoTest.StreamedContinuousRequest\x1a(.jaegerGoTest.StreamedContinuousResponse\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/streamed-continuous0\x01\x12\x7f\n" +
+	"\x10StreamedSporadic\x12%.jaegerGoTest.StreamedSporadicRequest\x1a&.jaegerGoTest.StreamedSporadicResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/streamed-sporadic0\x01B%Z#github.com/miparnisari/jaegerGoTestb\x06proto3"
 
 var (
 	file_proto_jaegerGoTest_proto_rawDescOnce sync.Once
@@ -135,16 +210,20 @@ func file_proto_jaegerGoTest_proto_rawDescGZIP() []byte {
 	return file_proto_jaegerGoTest_proto_rawDescData
 }
 
-var file_proto_jaegerGoTest_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_proto_jaegerGoTest_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_proto_jaegerGoTest_proto_goTypes = []any{
-	(*StreamedGetStoreRequest)(nil),  // 0: jaegerGoTest.StreamedGetStoreRequest
-	(*StreamedGetStoreResponse)(nil), // 1: jaegerGoTest.StreamedGetStoreResponse
+	(*StreamedContinuousRequest)(nil),  // 0: jaegerGoTest.StreamedContinuousRequest
+	(*StreamedContinuousResponse)(nil), // 1: jaegerGoTest.StreamedContinuousResponse
+	(*StreamedSporadicRequest)(nil),    // 2: jaegerGoTest.StreamedSporadicRequest
+	(*StreamedSporadicResponse)(nil),   // 3: jaegerGoTest.StreamedSporadicResponse
 }
 var file_proto_jaegerGoTest_proto_depIdxs = []int32{
-	0, // 0: jaegerGoTest.JaegerGoTest.StreamedGetStoreID:input_type -> jaegerGoTest.StreamedGetStoreRequest
-	1, // 1: jaegerGoTest.JaegerGoTest.StreamedGetStoreID:output_type -> jaegerGoTest.StreamedGetStoreResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	0, // 0: jaegerGoTest.JaegerGoTest.StreamedContinuous:input_type -> jaegerGoTest.StreamedContinuousRequest
+	2, // 1: jaegerGoTest.JaegerGoTest.StreamedSporadic:input_type -> jaegerGoTest.StreamedSporadicRequest
+	1, // 2: jaegerGoTest.JaegerGoTest.StreamedContinuous:output_type -> jaegerGoTest.StreamedContinuousResponse
+	3, // 3: jaegerGoTest.JaegerGoTest.StreamedSporadic:output_type -> jaegerGoTest.StreamedSporadicResponse
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -161,7 +240,7 @@ func file_proto_jaegerGoTest_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_jaegerGoTest_proto_rawDesc), len(file_proto_jaegerGoTest_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

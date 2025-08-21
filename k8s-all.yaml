@@ -4,8 +4,13 @@ metadata:
   name: contour
   namespace: projectcontour
 data:
+  # see https://github.com/projectcontour/contour/blob/main/examples/contour/01-contour-config.yaml
   contour.yaml: |
     debug: true
+    timeouts:
+      stream-idle-timeout: infinity # StreamIdleTimeout defines how long the proxy should wait while there is no
+        #request activity (for HTTP/1.1) or stream activity (for HTTP/2) before
+        #terminating the HTTP request or stream.
     accesslog-format: envoy
     accesslog-format-string: "[%START_TIME%] %REQ(:METHOD)% %REQ(X-ENVOY-ORIGINAL-PATH?:PATH)% %PROTOCOL% %RESPONSE_CODE% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT% %DURATION% %RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)% %REQ(X-FORWARDED-FOR)% %REQ(USER-AGENT)% %REQ(X-REQUEST-ID)% %REQ(:AUTHORITY)% %UPSTREAM_HOST%\n"
 ---
@@ -71,8 +76,8 @@ spec:
   - conditions:
     - prefix: /streamed
     timeoutPolicy:
-      response: 10s
-      idle: 10s
+#      response: 5s
+#      idle: 20s
     services:
     - name: jaeger-go-test
       port: 8080
@@ -86,8 +91,9 @@ spec:
     fqdn: grpc.localhost
   routes:
   - timeoutPolicy:
-      response: 10s
-      idle: 10s
+      # see https://projectcontour.io/docs/1.32/guides/grpc/#httpproxy-configuration
+      response: 5s
+#      idle: 20s
     services:
     - name: jaeger-go-test
       port: 8081

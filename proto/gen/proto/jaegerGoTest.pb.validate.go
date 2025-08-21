@@ -35,53 +35,42 @@ var (
 	_ = sort.Sort
 )
 
-// Validate checks the field values on StreamedGetStoreRequest with the rules
+// Validate checks the field values on StreamedContinuousRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *StreamedGetStoreRequest) Validate() error {
+func (m *StreamedContinuousRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on StreamedGetStoreRequest with the
+// ValidateAll checks the field values on StreamedContinuousRequest with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// StreamedGetStoreRequestMultiError, or nil if none found.
-func (m *StreamedGetStoreRequest) ValidateAll() error {
+// StreamedContinuousRequestMultiError, or nil if none found.
+func (m *StreamedContinuousRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *StreamedGetStoreRequest) validate(all bool) error {
+func (m *StreamedContinuousRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
-	if !_StreamedGetStoreRequest_StoreId_Pattern.MatchString(m.GetStoreId()) {
-		err := StreamedGetStoreRequestValidationError{
-			field:  "StoreId",
-			reason: "value does not match regex pattern \"^[ABCDEFGHJKMNPQRSTVWXYZ0-9]{26}$\"",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
 	if len(errors) > 0 {
-		return StreamedGetStoreRequestMultiError(errors)
+		return StreamedContinuousRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// StreamedGetStoreRequestMultiError is an error wrapping multiple validation
-// errors returned by StreamedGetStoreRequest.ValidateAll() if the designated
-// constraints aren't met.
-type StreamedGetStoreRequestMultiError []error
+// StreamedContinuousRequestMultiError is an error wrapping multiple validation
+// errors returned by StreamedContinuousRequest.ValidateAll() if the
+// designated constraints aren't met.
+type StreamedContinuousRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m StreamedGetStoreRequestMultiError) Error() string {
+func (m StreamedContinuousRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -90,11 +79,11 @@ func (m StreamedGetStoreRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m StreamedGetStoreRequestMultiError) AllErrors() []error { return m }
+func (m StreamedContinuousRequestMultiError) AllErrors() []error { return m }
 
-// StreamedGetStoreRequestValidationError is the validation error returned by
-// StreamedGetStoreRequest.Validate if the designated constraints aren't met.
-type StreamedGetStoreRequestValidationError struct {
+// StreamedContinuousRequestValidationError is the validation error returned by
+// StreamedContinuousRequest.Validate if the designated constraints aren't met.
+type StreamedContinuousRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -102,24 +91,24 @@ type StreamedGetStoreRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e StreamedGetStoreRequestValidationError) Field() string { return e.field }
+func (e StreamedContinuousRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e StreamedGetStoreRequestValidationError) Reason() string { return e.reason }
+func (e StreamedContinuousRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e StreamedGetStoreRequestValidationError) Cause() error { return e.cause }
+func (e StreamedContinuousRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e StreamedGetStoreRequestValidationError) Key() bool { return e.key }
+func (e StreamedContinuousRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e StreamedGetStoreRequestValidationError) ErrorName() string {
-	return "StreamedGetStoreRequestValidationError"
+func (e StreamedContinuousRequestValidationError) ErrorName() string {
+	return "StreamedContinuousRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e StreamedGetStoreRequestValidationError) Error() string {
+func (e StreamedContinuousRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -131,14 +120,14 @@ func (e StreamedGetStoreRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sStreamedGetStoreRequest.%s: %s%s",
+		"invalid %sStreamedContinuousRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = StreamedGetStoreRequestValidationError{}
+var _ error = StreamedContinuousRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -146,26 +135,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = StreamedGetStoreRequestValidationError{}
+} = StreamedContinuousRequestValidationError{}
 
-var _StreamedGetStoreRequest_StoreId_Pattern = regexp.MustCompile("^[ABCDEFGHJKMNPQRSTVWXYZ0-9]{26}$")
-
-// Validate checks the field values on StreamedGetStoreResponse with the rules
-// defined in the proto definition for this message. If any rules are
+// Validate checks the field values on StreamedContinuousResponse with the
+// rules defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *StreamedGetStoreResponse) Validate() error {
+func (m *StreamedContinuousResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on StreamedGetStoreResponse with the
+// ValidateAll checks the field values on StreamedContinuousResponse with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// StreamedGetStoreResponseMultiError, or nil if none found.
-func (m *StreamedGetStoreResponse) ValidateAll() error {
+// StreamedContinuousResponseMultiError, or nil if none found.
+func (m *StreamedContinuousResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *StreamedGetStoreResponse) validate(all bool) error {
+func (m *StreamedContinuousResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -175,19 +162,19 @@ func (m *StreamedGetStoreResponse) validate(all bool) error {
 	// no validation rules for Value
 
 	if len(errors) > 0 {
-		return StreamedGetStoreResponseMultiError(errors)
+		return StreamedContinuousResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// StreamedGetStoreResponseMultiError is an error wrapping multiple validation
-// errors returned by StreamedGetStoreResponse.ValidateAll() if the designated
-// constraints aren't met.
-type StreamedGetStoreResponseMultiError []error
+// StreamedContinuousResponseMultiError is an error wrapping multiple
+// validation errors returned by StreamedContinuousResponse.ValidateAll() if
+// the designated constraints aren't met.
+type StreamedContinuousResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m StreamedGetStoreResponseMultiError) Error() string {
+func (m StreamedContinuousResponseMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -196,11 +183,11 @@ func (m StreamedGetStoreResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m StreamedGetStoreResponseMultiError) AllErrors() []error { return m }
+func (m StreamedContinuousResponseMultiError) AllErrors() []error { return m }
 
-// StreamedGetStoreResponseValidationError is the validation error returned by
-// StreamedGetStoreResponse.Validate if the designated constraints aren't met.
-type StreamedGetStoreResponseValidationError struct {
+// StreamedContinuousResponseValidationError is the validation error returned
+// by StreamedContinuousResponse.Validate if the designated constraints aren't met.
+type StreamedContinuousResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -208,24 +195,24 @@ type StreamedGetStoreResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e StreamedGetStoreResponseValidationError) Field() string { return e.field }
+func (e StreamedContinuousResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e StreamedGetStoreResponseValidationError) Reason() string { return e.reason }
+func (e StreamedContinuousResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e StreamedGetStoreResponseValidationError) Cause() error { return e.cause }
+func (e StreamedContinuousResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e StreamedGetStoreResponseValidationError) Key() bool { return e.key }
+func (e StreamedContinuousResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e StreamedGetStoreResponseValidationError) ErrorName() string {
-	return "StreamedGetStoreResponseValidationError"
+func (e StreamedContinuousResponseValidationError) ErrorName() string {
+	return "StreamedContinuousResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e StreamedGetStoreResponseValidationError) Error() string {
+func (e StreamedContinuousResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -237,14 +224,14 @@ func (e StreamedGetStoreResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sStreamedGetStoreResponse.%s: %s%s",
+		"invalid %sStreamedContinuousResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = StreamedGetStoreResponseValidationError{}
+var _ error = StreamedContinuousResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -252,4 +239,210 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = StreamedGetStoreResponseValidationError{}
+} = StreamedContinuousResponseValidationError{}
+
+// Validate checks the field values on StreamedSporadicRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *StreamedSporadicRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on StreamedSporadicRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// StreamedSporadicRequestMultiError, or nil if none found.
+func (m *StreamedSporadicRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *StreamedSporadicRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return StreamedSporadicRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// StreamedSporadicRequestMultiError is an error wrapping multiple validation
+// errors returned by StreamedSporadicRequest.ValidateAll() if the designated
+// constraints aren't met.
+type StreamedSporadicRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m StreamedSporadicRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m StreamedSporadicRequestMultiError) AllErrors() []error { return m }
+
+// StreamedSporadicRequestValidationError is the validation error returned by
+// StreamedSporadicRequest.Validate if the designated constraints aren't met.
+type StreamedSporadicRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e StreamedSporadicRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e StreamedSporadicRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e StreamedSporadicRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e StreamedSporadicRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e StreamedSporadicRequestValidationError) ErrorName() string {
+	return "StreamedSporadicRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e StreamedSporadicRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sStreamedSporadicRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = StreamedSporadicRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = StreamedSporadicRequestValidationError{}
+
+// Validate checks the field values on StreamedSporadicResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *StreamedSporadicResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on StreamedSporadicResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// StreamedSporadicResponseMultiError, or nil if none found.
+func (m *StreamedSporadicResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *StreamedSporadicResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Value
+
+	if len(errors) > 0 {
+		return StreamedSporadicResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// StreamedSporadicResponseMultiError is an error wrapping multiple validation
+// errors returned by StreamedSporadicResponse.ValidateAll() if the designated
+// constraints aren't met.
+type StreamedSporadicResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m StreamedSporadicResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m StreamedSporadicResponseMultiError) AllErrors() []error { return m }
+
+// StreamedSporadicResponseValidationError is the validation error returned by
+// StreamedSporadicResponse.Validate if the designated constraints aren't met.
+type StreamedSporadicResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e StreamedSporadicResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e StreamedSporadicResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e StreamedSporadicResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e StreamedSporadicResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e StreamedSporadicResponseValidationError) ErrorName() string {
+	return "StreamedSporadicResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e StreamedSporadicResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sStreamedSporadicResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = StreamedSporadicResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = StreamedSporadicResponseValidationError{}

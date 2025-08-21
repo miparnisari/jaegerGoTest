@@ -14,6 +14,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 
@@ -23,7 +24,7 @@ import (
 
 type MyServer struct {
 	jaegerGoTest.UnimplementedJaegerGoTestServer
-	counter atomic.Int32
+	counterContinuous, counterSporadic atomic.Int32
 }
 
 func main() {
@@ -43,6 +44,7 @@ func main() {
 	opts := []grpc.ServerOption{
 		grpc.ChainUnaryInterceptor(unaryInterceptors...),
 		grpc.ChainStreamInterceptor(streamInterceptors...),
+		grpc.KeepaliveParams(keepalive.ServerParameters{}),
 	}
 	grpcServer := grpc.NewServer(opts...)
 	jaegerGoTest.RegisterJaegerGoTestServer(grpcServer, service)
@@ -104,14 +106,26 @@ func main() {
 	<-ctx.Done()
 }
 
-func (s *MyServer) StreamedGetStoreID(in *jaegerGoTest.StreamedGetStoreRequest, stream jaegerGoTest.JaegerGoTest_StreamedGetStoreIDServer) error {
-	s.counter.Store(0)
+func (s *MyServer) StreamedContinuous(in *jaegerGoTest.StreamedContinuousRequest, stream jaegerGoTest.JaegerGoTest_StreamedContinuousServer) error {
+	s.counterContinuous.Store(0)
 	for {
-		err := stream.Send(&jaegerGoTest.StreamedGetStoreResponse{Value: s.counter.Add(1)})
+		err := stream.Send(&jaegerGoTest.StreamedContinuousResponse{Value: s.counterContinuous.Add(1)})
 		if err != nil {
 			fmt.Println("stream send error:", err)
 			return err
 		}
 		time.Sleep(10 * time.Millisecond)
+	}
+}
+
+func (s *MyServer) StreamedSporadic(in *jaegerGoTest.StreamedSporadicRequest, stream jaegerGoTest.JaegerGoTest_StreamedSporadicServer) error {
+	s.counterSporadic.Store(0)
+	for {
+		err := stream.Send(&jaegerGoTest.StreamedSporadicResponse{Value: s.counterSporadic.Add(1)})
+		if err != nil {
+			fmt.Println("stream send error:", err)
+			return err
+		}
+		time.Sleep(5 * time.Second)
 	}
 }

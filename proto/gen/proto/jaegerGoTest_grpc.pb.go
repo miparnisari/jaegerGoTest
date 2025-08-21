@@ -19,14 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	JaegerGoTest_StreamedGetStoreID_FullMethodName = "/jaegerGoTest.JaegerGoTest/StreamedGetStoreID"
+	JaegerGoTest_StreamedContinuous_FullMethodName = "/jaegerGoTest.JaegerGoTest/StreamedContinuous"
+	JaegerGoTest_StreamedSporadic_FullMethodName   = "/jaegerGoTest.JaegerGoTest/StreamedSporadic"
 )
 
 // JaegerGoTestClient is the client API for JaegerGoTest service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type JaegerGoTestClient interface {
-	StreamedGetStoreID(ctx context.Context, in *StreamedGetStoreRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamedGetStoreResponse], error)
+	StreamedContinuous(ctx context.Context, in *StreamedContinuousRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamedContinuousResponse], error)
+	StreamedSporadic(ctx context.Context, in *StreamedSporadicRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamedSporadicResponse], error)
 }
 
 type jaegerGoTestClient struct {
@@ -37,13 +39,13 @@ func NewJaegerGoTestClient(cc grpc.ClientConnInterface) JaegerGoTestClient {
 	return &jaegerGoTestClient{cc}
 }
 
-func (c *jaegerGoTestClient) StreamedGetStoreID(ctx context.Context, in *StreamedGetStoreRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamedGetStoreResponse], error) {
+func (c *jaegerGoTestClient) StreamedContinuous(ctx context.Context, in *StreamedContinuousRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamedContinuousResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &JaegerGoTest_ServiceDesc.Streams[0], JaegerGoTest_StreamedGetStoreID_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &JaegerGoTest_ServiceDesc.Streams[0], JaegerGoTest_StreamedContinuous_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[StreamedGetStoreRequest, StreamedGetStoreResponse]{ClientStream: stream}
+	x := &grpc.GenericClientStream[StreamedContinuousRequest, StreamedContinuousResponse]{ClientStream: stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -54,13 +56,33 @@ func (c *jaegerGoTestClient) StreamedGetStoreID(ctx context.Context, in *Streame
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type JaegerGoTest_StreamedGetStoreIDClient = grpc.ServerStreamingClient[StreamedGetStoreResponse]
+type JaegerGoTest_StreamedContinuousClient = grpc.ServerStreamingClient[StreamedContinuousResponse]
+
+func (c *jaegerGoTestClient) StreamedSporadic(ctx context.Context, in *StreamedSporadicRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamedSporadicResponse], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &JaegerGoTest_ServiceDesc.Streams[1], JaegerGoTest_StreamedSporadic_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[StreamedSporadicRequest, StreamedSporadicResponse]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type JaegerGoTest_StreamedSporadicClient = grpc.ServerStreamingClient[StreamedSporadicResponse]
 
 // JaegerGoTestServer is the server API for JaegerGoTest service.
 // All implementations must embed UnimplementedJaegerGoTestServer
 // for forward compatibility.
 type JaegerGoTestServer interface {
-	StreamedGetStoreID(*StreamedGetStoreRequest, grpc.ServerStreamingServer[StreamedGetStoreResponse]) error
+	StreamedContinuous(*StreamedContinuousRequest, grpc.ServerStreamingServer[StreamedContinuousResponse]) error
+	StreamedSporadic(*StreamedSporadicRequest, grpc.ServerStreamingServer[StreamedSporadicResponse]) error
 	mustEmbedUnimplementedJaegerGoTestServer()
 }
 
@@ -71,8 +93,11 @@ type JaegerGoTestServer interface {
 // pointer dereference when methods are called.
 type UnimplementedJaegerGoTestServer struct{}
 
-func (UnimplementedJaegerGoTestServer) StreamedGetStoreID(*StreamedGetStoreRequest, grpc.ServerStreamingServer[StreamedGetStoreResponse]) error {
-	return status.Errorf(codes.Unimplemented, "method StreamedGetStoreID not implemented")
+func (UnimplementedJaegerGoTestServer) StreamedContinuous(*StreamedContinuousRequest, grpc.ServerStreamingServer[StreamedContinuousResponse]) error {
+	return status.Errorf(codes.Unimplemented, "method StreamedContinuous not implemented")
+}
+func (UnimplementedJaegerGoTestServer) StreamedSporadic(*StreamedSporadicRequest, grpc.ServerStreamingServer[StreamedSporadicResponse]) error {
+	return status.Errorf(codes.Unimplemented, "method StreamedSporadic not implemented")
 }
 func (UnimplementedJaegerGoTestServer) mustEmbedUnimplementedJaegerGoTestServer() {}
 func (UnimplementedJaegerGoTestServer) testEmbeddedByValue()                      {}
@@ -95,16 +120,27 @@ func RegisterJaegerGoTestServer(s grpc.ServiceRegistrar, srv JaegerGoTestServer)
 	s.RegisterService(&JaegerGoTest_ServiceDesc, srv)
 }
 
-func _JaegerGoTest_StreamedGetStoreID_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(StreamedGetStoreRequest)
+func _JaegerGoTest_StreamedContinuous_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(StreamedContinuousRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(JaegerGoTestServer).StreamedGetStoreID(m, &grpc.GenericServerStream[StreamedGetStoreRequest, StreamedGetStoreResponse]{ServerStream: stream})
+	return srv.(JaegerGoTestServer).StreamedContinuous(m, &grpc.GenericServerStream[StreamedContinuousRequest, StreamedContinuousResponse]{ServerStream: stream})
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type JaegerGoTest_StreamedGetStoreIDServer = grpc.ServerStreamingServer[StreamedGetStoreResponse]
+type JaegerGoTest_StreamedContinuousServer = grpc.ServerStreamingServer[StreamedContinuousResponse]
+
+func _JaegerGoTest_StreamedSporadic_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(StreamedSporadicRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(JaegerGoTestServer).StreamedSporadic(m, &grpc.GenericServerStream[StreamedSporadicRequest, StreamedSporadicResponse]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type JaegerGoTest_StreamedSporadicServer = grpc.ServerStreamingServer[StreamedSporadicResponse]
 
 // JaegerGoTest_ServiceDesc is the grpc.ServiceDesc for JaegerGoTest service.
 // It's only intended for direct use with grpc.RegisterService,
@@ -115,8 +151,13 @@ var JaegerGoTest_ServiceDesc = grpc.ServiceDesc{
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "StreamedGetStoreID",
-			Handler:       _JaegerGoTest_StreamedGetStoreID_Handler,
+			StreamName:    "StreamedContinuous",
+			Handler:       _JaegerGoTest_StreamedContinuous_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "StreamedSporadic",
+			Handler:       _JaegerGoTest_StreamedSporadic_Handler,
 			ServerStreams: true,
 		},
 	},

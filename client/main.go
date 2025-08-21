@@ -8,9 +8,11 @@ import (
 	"log"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/keepalive"
 
 	jaegerGoTest "jaegerGoTest/proto/gen/proto"
 )
@@ -24,7 +26,10 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer cancel()
 
-	conn, err := grpc.NewClient(*serverAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(*serverAddr, grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithKeepaliveParams(keepalive.ClientParameters{
+			Time: 2 * time.Second,
+		}))
 	if err != nil {
 		log.Fatalf("Failed to connect to server: %v", err)
 	}
@@ -32,14 +37,10 @@ func main() {
 
 	client := jaegerGoTest.NewJaegerGoTestClient(conn)
 
-	req := &jaegerGoTest.StreamedGetStoreRequest{
-		StoreId: "",
-	}
-
 	fmt.Printf("Connecting to %s\n", *serverAddr)
 	fmt.Println("Receiving streaming data... (Press Ctrl+C to stop)")
 
-	stream, err := client.StreamedGetStoreID(context.Background(), req)
+	stream, err := client.StreamedContinuous(context.Background(), &jaegerGoTest.StreamedContinuousRequest{})
 	if err != nil {
 		log.Fatalf("Failed to call StreamedGetStoreID: %v", err)
 	}

@@ -6,21 +6,30 @@ import "google/api/field_behavior.proto";
 import "validate/validate.proto";
 import "google/api/annotations.proto";
 
-message StreamedGetStoreRequest {
-  string store_id = 1 [
-    json_name = "store_id",
-    (validate.rules).string = {pattern: "^[ABCDEFGHJKMNPQRSTVWXYZ0-9]{26}$"}
-  ];
+message StreamedContinuousRequest {
 }
 
-message StreamedGetStoreResponse {
+message StreamedContinuousResponse {
+  int32 value = 1;
+}
+
+message StreamedSporadicRequest {
+}
+
+message StreamedSporadicResponse {
   int32 value = 1;
 }
 
 service JaegerGoTest {
-  rpc StreamedGetStoreID(StreamedGetStoreRequest) returns (stream StreamedGetStoreResponse) {
+  rpc StreamedContinuous(StreamedContinuousRequest) returns (stream StreamedContinuousResponse) {
     option (google.api.http) = {
-      get: "/streamed"
+      get: "/streamed-continuous"
+    };
+  }
+
+  rpc StreamedSporadic(StreamedSporadicRequest) returns (stream StreamedSporadicResponse) {
+    option (google.api.http) = {
+      get: "/streamed-sporadic"
     };
   }
 }
