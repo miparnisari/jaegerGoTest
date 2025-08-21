@@ -109,7 +109,8 @@ func main() {
 func (s *MyServer) StreamedContinuous(in *jaegerGoTest.StreamedContinuousRequest, stream jaegerGoTest.JaegerGoTest_StreamedContinuousServer) error {
 	s.counterContinuous.Store(0)
 	for {
-		err := stream.Send(&jaegerGoTest.StreamedContinuousResponse{Value: s.counterContinuous.Add(1)})
+		fmt.Println("Sending response", s.counterContinuous.Add(1))
+		err := stream.Send(&jaegerGoTest.StreamedContinuousResponse{Value: s.counterContinuous.Load()})
 		if err != nil {
 			fmt.Println("stream send error:", err)
 			return err
@@ -121,7 +122,8 @@ func (s *MyServer) StreamedContinuous(in *jaegerGoTest.StreamedContinuousRequest
 func (s *MyServer) StreamedSporadic(in *jaegerGoTest.StreamedSporadicRequest, stream jaegerGoTest.JaegerGoTest_StreamedSporadicServer) error {
 	s.counterSporadic.Store(0)
 	for {
-		err := stream.Send(&jaegerGoTest.StreamedSporadicResponse{Value: s.counterSporadic.Add(1)})
+		fmt.Println("Sending response", s.counterSporadic.Add(1))
+		err := stream.Send(&jaegerGoTest.StreamedSporadicResponse{Value: s.counterSporadic.Load()})
 		if err != nil {
 			fmt.Println("stream send error:", err)
 			return err

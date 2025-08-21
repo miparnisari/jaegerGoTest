@@ -53,11 +53,8 @@ cleanup() {
 # Set trap to cleanup on script exit
 trap cleanup SIGINT SIGTERM EXIT
 
-# Stream logs in foreground (this blocks)
-echo "Starting Contour log streaming..."
-sleep 2
-
-# Stream both Contour and Envoy logs together
+# Stream Contour, Envoy, and app server logs together
 (kubectl logs -f deployment/contour -n projectcontour -c contour --prefix=true --tail=20 2>&1 | sed 's/^/[CONTOUR] /' &
  kubectl logs -f daemonset/envoy -n projectcontour -c envoy --prefix=true --tail=20 2>&1 | sed 's/^/[ENVOY] /' &
+ kubectl logs -f deployment/jaeger-go-test --prefix=true --tail=20 2>&1 | sed 's/^/[APP] /' &
  wait)
