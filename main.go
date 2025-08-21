@@ -2,26 +2,27 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"net"
+	"net/http"
+	"os/signal"
+	"sync/atomic"
+	"syscall"
 	"time"
-
-	"jaegerGoTest/interceptors"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 
-	"net"
-	"net/http"
-	"os/signal"
-	"syscall"
-
+	"jaegerGoTest/interceptors"
 	jaegerGoTest "jaegerGoTest/proto/gen/proto"
 )
 
 type MyServer struct {
 	jaegerGoTest.UnimplementedJaegerGoTestServer
+	counter atomic.Int32
 }
 
 func main() {
@@ -73,7 +74,7 @@ func main() {
 		}),
 	}
 
-	runtime.DefaultContextTimeout = 50 * time.Millisecond
+	//runtime.DefaultContextTimeout = 50 * time.Millisecond
 	mux := runtime.NewServeMux(muxOpts...)
 
 	// Create reverse proxy http -> GRPC
@@ -93,7 +94,7 @@ func main() {
 
 	go func() {
 		fmt.Println(fmt.Sprintf("HTTP server listening on 8080"))
-		if err := httpServer.ListenAndServe(); err != http.ErrServerClosed {
+		if err := httpServer.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
 			fmt.Errorf("failed to start HTTP server: %w", err)
 		}
 	}()
@@ -101,10 +102,13 @@ func main() {
 	<-ctx.Done()
 }
 
-func (s *MyServer) GetStoreID(ctx context.Context, in *jaegerGoTest.GetStoreRequest) (*jaegerGoTest.GetStoreResponse, error) {
-	return &jaegerGoTest.GetStoreResponse{Value: "some data!"}, nil
-}
-
 func (s *MyServer) StreamedGetStoreID(in *jaegerGoTest.StreamedGetStoreRequest, stream jaegerGoTest.JaegerGoTest_StreamedGetStoreIDServer) error {
-	return nil
+	for {
+		err := stream.Send(&jaegerGoTest.StreamedGetStoreResponse{Value: s.counter.Add(1)})
+		if err != nil {
+			fmt.Println("stream send error:", err)
+			return err
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
 }

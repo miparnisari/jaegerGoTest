@@ -6,17 +6,6 @@ import "google/api/field_behavior.proto";
 import "validate/validate.proto";
 import "google/api/annotations.proto";
 
-message GetStoreRequest {
-  string store_id = 1 [
-    json_name = "store_id",
-    (validate.rules).string = {pattern: "^[ABCDEFGHJKMNPQRSTVWXYZ0-9]{26}$"}
-  ];
-}
-
-message GetStoreResponse {
-  string value = 1;
-}
-
 message StreamedGetStoreRequest {
   string store_id = 1 [
     json_name = "store_id",
@@ -25,19 +14,13 @@ message StreamedGetStoreRequest {
 }
 
 message StreamedGetStoreResponse {
-  string value = 1;
+  int32 value = 1;
 }
 
 service JaegerGoTest {
-  rpc GetStoreID(GetStoreRequest) returns (GetStoreResponse) {
-    option (google.api.http) = {
-        get: "/{store_id}"
-    };
-  }
-
   rpc StreamedGetStoreID(StreamedGetStoreRequest) returns (stream StreamedGetStoreResponse) {
     option (google.api.http) = {
-      get: "/streamed/{store_id}"
+      get: "/streamed"
     };
   }
 }

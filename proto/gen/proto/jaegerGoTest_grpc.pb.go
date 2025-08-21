@@ -19,7 +19,6 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	JaegerGoTest_GetStoreID_FullMethodName         = "/jaegerGoTest.JaegerGoTest/GetStoreID"
 	JaegerGoTest_StreamedGetStoreID_FullMethodName = "/jaegerGoTest.JaegerGoTest/StreamedGetStoreID"
 )
 
@@ -27,7 +26,6 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type JaegerGoTestClient interface {
-	GetStoreID(ctx context.Context, in *GetStoreRequest, opts ...grpc.CallOption) (*GetStoreResponse, error)
 	StreamedGetStoreID(ctx context.Context, in *StreamedGetStoreRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamedGetStoreResponse], error)
 }
 
@@ -37,16 +35,6 @@ type jaegerGoTestClient struct {
 
 func NewJaegerGoTestClient(cc grpc.ClientConnInterface) JaegerGoTestClient {
 	return &jaegerGoTestClient{cc}
-}
-
-func (c *jaegerGoTestClient) GetStoreID(ctx context.Context, in *GetStoreRequest, opts ...grpc.CallOption) (*GetStoreResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetStoreResponse)
-	err := c.cc.Invoke(ctx, JaegerGoTest_GetStoreID_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *jaegerGoTestClient) StreamedGetStoreID(ctx context.Context, in *StreamedGetStoreRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamedGetStoreResponse], error) {
@@ -72,7 +60,6 @@ type JaegerGoTest_StreamedGetStoreIDClient = grpc.ServerStreamingClient[Streamed
 // All implementations must embed UnimplementedJaegerGoTestServer
 // for forward compatibility.
 type JaegerGoTestServer interface {
-	GetStoreID(context.Context, *GetStoreRequest) (*GetStoreResponse, error)
 	StreamedGetStoreID(*StreamedGetStoreRequest, grpc.ServerStreamingServer[StreamedGetStoreResponse]) error
 	mustEmbedUnimplementedJaegerGoTestServer()
 }
@@ -84,9 +71,6 @@ type JaegerGoTestServer interface {
 // pointer dereference when methods are called.
 type UnimplementedJaegerGoTestServer struct{}
 
-func (UnimplementedJaegerGoTestServer) GetStoreID(context.Context, *GetStoreRequest) (*GetStoreResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetStoreID not implemented")
-}
 func (UnimplementedJaegerGoTestServer) StreamedGetStoreID(*StreamedGetStoreRequest, grpc.ServerStreamingServer[StreamedGetStoreResponse]) error {
 	return status.Errorf(codes.Unimplemented, "method StreamedGetStoreID not implemented")
 }
@@ -111,24 +95,6 @@ func RegisterJaegerGoTestServer(s grpc.ServiceRegistrar, srv JaegerGoTestServer)
 	s.RegisterService(&JaegerGoTest_ServiceDesc, srv)
 }
 
-func _JaegerGoTest_GetStoreID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetStoreRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(JaegerGoTestServer).GetStoreID(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: JaegerGoTest_GetStoreID_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(JaegerGoTestServer).GetStoreID(ctx, req.(*GetStoreRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _JaegerGoTest_StreamedGetStoreID_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(StreamedGetStoreRequest)
 	if err := stream.RecvMsg(m); err != nil {
@@ -146,12 +112,7 @@ type JaegerGoTest_StreamedGetStoreIDServer = grpc.ServerStreamingServer[Streamed
 var JaegerGoTest_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "jaegerGoTest.JaegerGoTest",
 	HandlerType: (*JaegerGoTestServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GetStoreID",
-			Handler:    _JaegerGoTest_GetStoreID_Handler,
-		},
-	},
+	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "StreamedGetStoreID",

@@ -23,94 +23,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type GetStoreRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	StoreId       string                 `protobuf:"bytes,1,opt,name=store_id,proto3" json:"store_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetStoreRequest) Reset() {
-	*x = GetStoreRequest{}
-	mi := &file_proto_jaegerGoTest_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetStoreRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetStoreRequest) ProtoMessage() {}
-
-func (x *GetStoreRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_jaegerGoTest_proto_msgTypes[0]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetStoreRequest.ProtoReflect.Descriptor instead.
-func (*GetStoreRequest) Descriptor() ([]byte, []int) {
-	return file_proto_jaegerGoTest_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *GetStoreRequest) GetStoreId() string {
-	if x != nil {
-		return x.StoreId
-	}
-	return ""
-}
-
-type GetStoreResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Value         string                 `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetStoreResponse) Reset() {
-	*x = GetStoreResponse{}
-	mi := &file_proto_jaegerGoTest_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetStoreResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetStoreResponse) ProtoMessage() {}
-
-func (x *GetStoreResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_jaegerGoTest_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetStoreResponse.ProtoReflect.Descriptor instead.
-func (*GetStoreResponse) Descriptor() ([]byte, []int) {
-	return file_proto_jaegerGoTest_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *GetStoreResponse) GetValue() string {
-	if x != nil {
-		return x.Value
-	}
-	return ""
-}
-
 type StreamedGetStoreRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	StoreId       string                 `protobuf:"bytes,1,opt,name=store_id,proto3" json:"store_id,omitempty"`
@@ -120,7 +32,7 @@ type StreamedGetStoreRequest struct {
 
 func (x *StreamedGetStoreRequest) Reset() {
 	*x = StreamedGetStoreRequest{}
-	mi := &file_proto_jaegerGoTest_proto_msgTypes[2]
+	mi := &file_proto_jaegerGoTest_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -132,7 +44,7 @@ func (x *StreamedGetStoreRequest) String() string {
 func (*StreamedGetStoreRequest) ProtoMessage() {}
 
 func (x *StreamedGetStoreRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_jaegerGoTest_proto_msgTypes[2]
+	mi := &file_proto_jaegerGoTest_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -145,7 +57,7 @@ func (x *StreamedGetStoreRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamedGetStoreRequest.ProtoReflect.Descriptor instead.
 func (*StreamedGetStoreRequest) Descriptor() ([]byte, []int) {
-	return file_proto_jaegerGoTest_proto_rawDescGZIP(), []int{2}
+	return file_proto_jaegerGoTest_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *StreamedGetStoreRequest) GetStoreId() string {
@@ -157,14 +69,14 @@ func (x *StreamedGetStoreRequest) GetStoreId() string {
 
 type StreamedGetStoreResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Value         string                 `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
+	Value         int32                  `protobuf:"varint,1,opt,name=value,proto3" json:"value,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *StreamedGetStoreResponse) Reset() {
 	*x = StreamedGetStoreResponse{}
-	mi := &file_proto_jaegerGoTest_proto_msgTypes[3]
+	mi := &file_proto_jaegerGoTest_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -176,7 +88,7 @@ func (x *StreamedGetStoreResponse) String() string {
 func (*StreamedGetStoreResponse) ProtoMessage() {}
 
 func (x *StreamedGetStoreResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_jaegerGoTest_proto_msgTypes[3]
+	mi := &file_proto_jaegerGoTest_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -189,33 +101,27 @@ func (x *StreamedGetStoreResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamedGetStoreResponse.ProtoReflect.Descriptor instead.
 func (*StreamedGetStoreResponse) Descriptor() ([]byte, []int) {
-	return file_proto_jaegerGoTest_proto_rawDescGZIP(), []int{3}
+	return file_proto_jaegerGoTest_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *StreamedGetStoreResponse) GetValue() string {
+func (x *StreamedGetStoreResponse) GetValue() int32 {
 	if x != nil {
 		return x.Value
 	}
-	return ""
+	return 0
 }
 
 var File_proto_jaegerGoTest_proto protoreflect.FileDescriptor
 
 const file_proto_jaegerGoTest_proto_rawDesc = "" +
 	"\n" +
-	"\x18proto/jaegerGoTest.proto\x12\fjaegerGoTest\x1a\x1fgoogle/api/field_behavior.proto\x1a\x17validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\"W\n" +
-	"\x0fGetStoreRequest\x12D\n" +
-	"\bstore_id\x18\x01 \x01(\tB(\xfaB%r#2!^[ABCDEFGHJKMNPQRSTVWXYZ0-9]{26}$R\bstore_id\"(\n" +
-	"\x10GetStoreResponse\x12\x14\n" +
-	"\x05value\x18\x01 \x01(\tR\x05value\"_\n" +
+	"\x18proto/jaegerGoTest.proto\x12\fjaegerGoTest\x1a\x1fgoogle/api/field_behavior.proto\x1a\x17validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\"_\n" +
 	"\x17StreamedGetStoreRequest\x12D\n" +
 	"\bstore_id\x18\x01 \x01(\tB(\xfaB%r#2!^[ABCDEFGHJKMNPQRSTVWXYZ0-9]{26}$R\bstore_id\"0\n" +
 	"\x18StreamedGetStoreResponse\x12\x14\n" +
-	"\x05value\x18\x01 \x01(\tR\x05value2\xf6\x01\n" +
-	"\fJaegerGoTest\x12`\n" +
-	"\n" +
-	"GetStoreID\x12\x1d.jaegerGoTest.GetStoreRequest\x1a\x1e.jaegerGoTest.GetStoreResponse\"\x13\x82\xd3\xe4\x93\x02\r\x12\v/{store_id}\x12\x83\x01\n" +
-	"\x12StreamedGetStoreID\x12%.jaegerGoTest.StreamedGetStoreRequest\x1a&.jaegerGoTest.StreamedGetStoreResponse\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/streamed/{store_id}0\x01B%Z#github.com/miparnisari/jaegerGoTestb\x06proto3"
+	"\x05value\x18\x01 \x01(\x05R\x05value2\x88\x01\n" +
+	"\fJaegerGoTest\x12x\n" +
+	"\x12StreamedGetStoreID\x12%.jaegerGoTest.StreamedGetStoreRequest\x1a&.jaegerGoTest.StreamedGetStoreResponse\"\x11\x82\xd3\xe4\x93\x02\v\x12\t/streamed0\x01B%Z#github.com/miparnisari/jaegerGoTestb\x06proto3"
 
 var (
 	file_proto_jaegerGoTest_proto_rawDescOnce sync.Once
@@ -229,20 +135,16 @@ func file_proto_jaegerGoTest_proto_rawDescGZIP() []byte {
 	return file_proto_jaegerGoTest_proto_rawDescData
 }
 
-var file_proto_jaegerGoTest_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_proto_jaegerGoTest_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_proto_jaegerGoTest_proto_goTypes = []any{
-	(*GetStoreRequest)(nil),          // 0: jaegerGoTest.GetStoreRequest
-	(*GetStoreResponse)(nil),         // 1: jaegerGoTest.GetStoreResponse
-	(*StreamedGetStoreRequest)(nil),  // 2: jaegerGoTest.StreamedGetStoreRequest
-	(*StreamedGetStoreResponse)(nil), // 3: jaegerGoTest.StreamedGetStoreResponse
+	(*StreamedGetStoreRequest)(nil),  // 0: jaegerGoTest.StreamedGetStoreRequest
+	(*StreamedGetStoreResponse)(nil), // 1: jaegerGoTest.StreamedGetStoreResponse
 }
 var file_proto_jaegerGoTest_proto_depIdxs = []int32{
-	0, // 0: jaegerGoTest.JaegerGoTest.GetStoreID:input_type -> jaegerGoTest.GetStoreRequest
-	2, // 1: jaegerGoTest.JaegerGoTest.StreamedGetStoreID:input_type -> jaegerGoTest.StreamedGetStoreRequest
-	1, // 2: jaegerGoTest.JaegerGoTest.GetStoreID:output_type -> jaegerGoTest.GetStoreResponse
-	3, // 3: jaegerGoTest.JaegerGoTest.StreamedGetStoreID:output_type -> jaegerGoTest.StreamedGetStoreResponse
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
+	0, // 0: jaegerGoTest.JaegerGoTest.StreamedGetStoreID:input_type -> jaegerGoTest.StreamedGetStoreRequest
+	1, // 1: jaegerGoTest.JaegerGoTest.StreamedGetStoreID:output_type -> jaegerGoTest.StreamedGetStoreResponse
+	1, // [1:2] is the sub-list for method output_type
+	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -259,7 +161,7 @@ func file_proto_jaegerGoTest_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_jaegerGoTest_proto_rawDesc), len(file_proto_jaegerGoTest_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
