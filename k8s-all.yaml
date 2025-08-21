@@ -27,7 +27,8 @@ spec:
       - name: server
         image: jaeger-go-test:latest
         ports:
-        - containerPort: 8080
+        - containerPort: 8080 # HTTP port
+        - containerPort: 8081 # gRPC port
         imagePullPolicy: Never
 ---
 apiVersion: v1
@@ -38,21 +39,56 @@ spec:
   selector:
     app: jaeger-go-test
   ports:
+  - name: "http"
+    port: 8080
+    targetPort: 8080
+  - name: "grpc"
+    port: 8081
+    targetPort: 8081
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: envoy
+  namespace: projectcontour
+spec:
+  selector:
+    app: envoy
+  ports:
   - port: 8080
     targetPort: 8080
-  type: ClusterIP
+  type: NodePort
 ---
 apiVersion: projectcontour.io/v1
 kind: HTTPProxy
 metadata:
-  name: jaeger-go-test
+  name: jaeger-go-test-http
 spec:
   virtualhost:
     fqdn: localhost
+  routes:
+  - conditions:
+    - prefix: /streamed
+    timeoutPolicy:
+      response: 10s
+      idle: 10s
+    services:
+    - name: jaeger-go-test
+      port: 8080
+---
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: jaeger-go-test-grpc
+spec:
+  virtualhost:
+    fqdn: grpc.localhost
   routes:
   - timeoutPolicy:
       response: 10s
       idle: 10s
     services:
     - name: jaeger-go-test
-      port: 8080
+      port: 8081
+      protocol: h2c # HTTP/2 cleartext for gRPC without TLS

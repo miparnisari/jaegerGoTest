@@ -33,15 +33,20 @@ kubectl wait --for=condition=available --timeout=120s deployment/contour -n proj
 # Wait for Envoy DaemonSet to be ready
 kubectl rollout status daemonset/envoy -n projectcontour --timeout=120s
 
-# Start port-forward in background
+# Start port-forwards in background
 echo "Starting port-forward on localhost:8080 via Contour..."
-kubectl port-forward service/envoy -n projectcontour 8080:80 &
-PORT_FORWARD_PID=$!
+kubectl port-forward service/envoy -n projectcontour 8080:8080 &
+PORT_FORWARD_PID_HTTP=$!
+
+echo "Starting port-forward on localhost:8081 via Contour..."
+kubectl port-forward service/envoy -n projectcontour 8081:8080 &
+PORT_FORWARD_PID_GRPC=$!
 
 # Cleanup function to kill processes
 cleanup() {
     echo "Stopping port-forward and log streaming..."
-    kill $PORT_FORWARD_PID 2>/dev/null || true
+    kill $PORT_FORWARD_PID_HTTP 2>/dev/null || true
+    kill $PORT_FORWARD_PID_GRPC 2>/dev/null || true
     exit 0
 }
 

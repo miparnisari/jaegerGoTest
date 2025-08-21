@@ -20,6 +20,7 @@ go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 1. Install [kind](https://kind.sigs.k8s.io/docs/user/quick-start/#installation)
 2. Run `./deploy.sh`
 3. On another window: `curl http://localhost:8080/streamed -v`
+4. `grpcurl -plaintext grpc.localhost:8081 list` and `grpcurl -plaintext grpc.localhost:8081 jaegerGoTest.JaegerGoTest/StreamedGetStoreID`
 
 ### Architecture
 

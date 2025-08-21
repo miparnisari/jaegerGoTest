@@ -14,6 +14,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 
 	"jaegerGoTest/interceptors"
@@ -45,8 +46,9 @@ func main() {
 	}
 	grpcServer := grpc.NewServer(opts...)
 	jaegerGoTest.RegisterJaegerGoTestServer(grpcServer, service)
+	reflection.Register(grpcServer)
 
-	lis, err := net.Listen("tcp", "localhost:8081")
+	lis, err := net.Listen("tcp", ":8081")
 	if err != nil {
 		panic(err)
 	}
@@ -103,6 +105,7 @@ func main() {
 }
 
 func (s *MyServer) StreamedGetStoreID(in *jaegerGoTest.StreamedGetStoreRequest, stream jaegerGoTest.JaegerGoTest_StreamedGetStoreIDServer) error {
+	s.counter.Store(0)
 	for {
 		err := stream.Send(&jaegerGoTest.StreamedGetStoreResponse{Value: s.counter.Add(1)})
 		if err != nil {
