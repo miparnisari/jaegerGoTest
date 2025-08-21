@@ -82,7 +82,7 @@ type GetStoreRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m GetStoreRequestMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -186,7 +186,7 @@ type GetStoreResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m GetStoreResponseMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -297,7 +297,7 @@ type StreamedGetStoreRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m StreamedGetStoreRequestMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -403,7 +403,7 @@ type StreamedGetStoreResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m StreamedGetStoreResponseMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}

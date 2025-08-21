@@ -51,7 +51,7 @@ func main() {
 	}
 
 	go func() {
-		fmt.Println(fmt.Sprintf("grpc server listening"))
+		fmt.Println(fmt.Sprintf("grpc server listening on 8081"))
 		if err := grpcServer.Serve(lis); err != nil {
 			fmt.Errorf("failed to start gRPC server: %w", err)
 		}
@@ -92,7 +92,7 @@ func main() {
 	})
 
 	go func() {
-		fmt.Println(fmt.Sprintf("HTTP server listening"))
+		fmt.Println(fmt.Sprintf("HTTP server listening on 8080"))
 		if err := httpServer.ListenAndServe(); err != http.ErrServerClosed {
 			fmt.Errorf("failed to start HTTP server: %w", err)
 		}
@@ -102,8 +102,6 @@ func main() {
 }
 
 func (s *MyServer) GetStoreID(ctx context.Context, in *jaegerGoTest.GetStoreRequest) (*jaegerGoTest.GetStoreResponse, error) {
-	// more than the timeout
-	time.Sleep(1 * time.Second)
 	return &jaegerGoTest.GetStoreResponse{Value: "some data!"}, nil
 }
 

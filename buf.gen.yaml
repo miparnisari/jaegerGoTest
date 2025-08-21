@@ -1,19 +1,16 @@
-version: v1
+version: v2
 plugins:
-  - plugin: go
+  - local: protoc-gen-go
     out: proto/gen
-    opt:
-      - paths=source_relative
-  - plugin: go-grpc
+    opt: paths=source_relative
+  - local: protoc-gen-go-grpc
     out: proto/gen
-    opt:
-      - paths=source_relative
-  - plugin: grpc-gateway
+    opt: paths=source_relative
+  - local: protoc-gen-grpc-gateway
     out: proto/gen
     opt:
       - paths=source_relative
       - generate_unbound_methods=true
-  - plugin: buf.build/bufbuild/validate-go
+  - remote: buf.build/bufbuild/validate-go
     out: proto/gen
-    opt:
-      - paths=source_relative
+    opt: paths=source_relative
