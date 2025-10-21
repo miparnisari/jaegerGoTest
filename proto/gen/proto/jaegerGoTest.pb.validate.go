@@ -446,3 +446,142 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = StreamedSporadicResponseValidationError{}
+
+// Validate checks the field values on TestMsg with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *TestMsg) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on TestMsg with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in TestMsgMultiError, or nil if none found.
+func (m *TestMsg) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *TestMsg) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	switch v := m.Test.(type) {
+	case *TestMsg_A:
+		if v == nil {
+			err := TestMsgValidationError{
+				field:  "Test",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		// no validation rules for A
+	case *TestMsg_B:
+		if v == nil {
+			err := TestMsgValidationError{
+				field:  "Test",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		// no validation rules for B
+	case *TestMsg_C:
+		if v == nil {
+			err := TestMsgValidationError{
+				field:  "Test",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		// no validation rules for C
+	default:
+		_ = v // ensures v is used
+	}
+
+	if len(errors) > 0 {
+		return TestMsgMultiError(errors)
+	}
+
+	return nil
+}
+
+// TestMsgMultiError is an error wrapping multiple validation errors returned
+// by TestMsg.ValidateAll() if the designated constraints aren't met.
+type TestMsgMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m TestMsgMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m TestMsgMultiError) AllErrors() []error { return m }
+
+// TestMsgValidationError is the validation error returned by TestMsg.Validate
+// if the designated constraints aren't met.
+type TestMsgValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e TestMsgValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e TestMsgValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e TestMsgValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e TestMsgValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e TestMsgValidationError) ErrorName() string { return "TestMsgValidationError" }
+
+// Error satisfies the builtin error interface
+func (e TestMsgValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sTestMsg.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = TestMsgValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = TestMsgValidationError{}

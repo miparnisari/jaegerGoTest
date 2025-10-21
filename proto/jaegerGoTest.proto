@@ -6,30 +6,10 @@ import "google/api/field_behavior.proto";
 import "validate/validate.proto";
 import "google/api/annotations.proto";
 
-message StreamedContinuousRequest {
-}
-
-message StreamedContinuousResponse {
-  int32 value = 1;
-}
-
-message StreamedSporadicRequest {
-}
-
-message StreamedSporadicResponse {
-  int32 value = 1;
-}
-
-service JaegerGoTest {
-  rpc StreamedContinuous(StreamedContinuousRequest) returns (stream StreamedContinuousResponse) {
-    option (google.api.http) = {
-      get: "/streamed-continuous"
-    };
-  }
-
-  rpc StreamedSporadic(StreamedSporadicRequest) returns (stream StreamedSporadicResponse) {
-    option (google.api.http) = {
-      get: "/streamed-sporadic"
-    };
+message TestMsg {
+  oneof Test {
+    string a = 1;
+    string b = 2;
+    string c = 3;
   }
 }
