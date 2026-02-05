@@ -241,6 +241,206 @@ var _ interface {
 	ErrorName() string
 } = StreamedContinuousResponseValidationError{}
 
+// Validate checks the field values on PanicCausingReq with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *PanicCausingReq) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on PanicCausingReq with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// PanicCausingReqMultiError, or nil if none found.
+func (m *PanicCausingReq) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *PanicCausingReq) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return PanicCausingReqMultiError(errors)
+	}
+
+	return nil
+}
+
+// PanicCausingReqMultiError is an error wrapping multiple validation errors
+// returned by PanicCausingReq.ValidateAll() if the designated constraints
+// aren't met.
+type PanicCausingReqMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m PanicCausingReqMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m PanicCausingReqMultiError) AllErrors() []error { return m }
+
+// PanicCausingReqValidationError is the validation error returned by
+// PanicCausingReq.Validate if the designated constraints aren't met.
+type PanicCausingReqValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e PanicCausingReqValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e PanicCausingReqValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e PanicCausingReqValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e PanicCausingReqValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e PanicCausingReqValidationError) ErrorName() string { return "PanicCausingReqValidationError" }
+
+// Error satisfies the builtin error interface
+func (e PanicCausingReqValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sPanicCausingReq.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = PanicCausingReqValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = PanicCausingReqValidationError{}
+
+// Validate checks the field values on PanicCausingRes with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *PanicCausingRes) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on PanicCausingRes with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// PanicCausingResMultiError, or nil if none found.
+func (m *PanicCausingRes) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *PanicCausingRes) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return PanicCausingResMultiError(errors)
+	}
+
+	return nil
+}
+
+// PanicCausingResMultiError is an error wrapping multiple validation errors
+// returned by PanicCausingRes.ValidateAll() if the designated constraints
+// aren't met.
+type PanicCausingResMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m PanicCausingResMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m PanicCausingResMultiError) AllErrors() []error { return m }
+
+// PanicCausingResValidationError is the validation error returned by
+// PanicCausingRes.Validate if the designated constraints aren't met.
+type PanicCausingResValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e PanicCausingResValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e PanicCausingResValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e PanicCausingResValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e PanicCausingResValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e PanicCausingResValidationError) ErrorName() string { return "PanicCausingResValidationError" }
+
+// Error satisfies the builtin error interface
+func (e PanicCausingResValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sPanicCausingRes.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = PanicCausingResValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = PanicCausingResValidationError{}
+
 // Validate checks the field values on StreamedSporadicRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.

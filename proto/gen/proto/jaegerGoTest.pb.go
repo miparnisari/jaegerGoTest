@@ -103,6 +103,78 @@ func (x *StreamedContinuousResponse) GetValue() int32 {
 	return 0
 }
 
+type PanicCausingReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PanicCausingReq) Reset() {
+	*x = PanicCausingReq{}
+	mi := &file_proto_jaegerGoTest_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PanicCausingReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PanicCausingReq) ProtoMessage() {}
+
+func (x *PanicCausingReq) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_jaegerGoTest_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PanicCausingReq.ProtoReflect.Descriptor instead.
+func (*PanicCausingReq) Descriptor() ([]byte, []int) {
+	return file_proto_jaegerGoTest_proto_rawDescGZIP(), []int{2}
+}
+
+type PanicCausingRes struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PanicCausingRes) Reset() {
+	*x = PanicCausingRes{}
+	mi := &file_proto_jaegerGoTest_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PanicCausingRes) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PanicCausingRes) ProtoMessage() {}
+
+func (x *PanicCausingRes) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_jaegerGoTest_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PanicCausingRes.ProtoReflect.Descriptor instead.
+func (*PanicCausingRes) Descriptor() ([]byte, []int) {
+	return file_proto_jaegerGoTest_proto_rawDescGZIP(), []int{3}
+}
+
 type StreamedSporadicRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -111,7 +183,7 @@ type StreamedSporadicRequest struct {
 
 func (x *StreamedSporadicRequest) Reset() {
 	*x = StreamedSporadicRequest{}
-	mi := &file_proto_jaegerGoTest_proto_msgTypes[2]
+	mi := &file_proto_jaegerGoTest_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -123,7 +195,7 @@ func (x *StreamedSporadicRequest) String() string {
 func (*StreamedSporadicRequest) ProtoMessage() {}
 
 func (x *StreamedSporadicRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_jaegerGoTest_proto_msgTypes[2]
+	mi := &file_proto_jaegerGoTest_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -136,7 +208,7 @@ func (x *StreamedSporadicRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamedSporadicRequest.ProtoReflect.Descriptor instead.
 func (*StreamedSporadicRequest) Descriptor() ([]byte, []int) {
-	return file_proto_jaegerGoTest_proto_rawDescGZIP(), []int{2}
+	return file_proto_jaegerGoTest_proto_rawDescGZIP(), []int{4}
 }
 
 type StreamedSporadicResponse struct {
@@ -148,7 +220,7 @@ type StreamedSporadicResponse struct {
 
 func (x *StreamedSporadicResponse) Reset() {
 	*x = StreamedSporadicResponse{}
-	mi := &file_proto_jaegerGoTest_proto_msgTypes[3]
+	mi := &file_proto_jaegerGoTest_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -160,7 +232,7 @@ func (x *StreamedSporadicResponse) String() string {
 func (*StreamedSporadicResponse) ProtoMessage() {}
 
 func (x *StreamedSporadicResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_jaegerGoTest_proto_msgTypes[3]
+	mi := &file_proto_jaegerGoTest_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -173,7 +245,7 @@ func (x *StreamedSporadicResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamedSporadicResponse.ProtoReflect.Descriptor instead.
 func (*StreamedSporadicResponse) Descriptor() ([]byte, []int) {
-	return file_proto_jaegerGoTest_proto_rawDescGZIP(), []int{3}
+	return file_proto_jaegerGoTest_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *StreamedSporadicResponse) GetValue() int32 {
@@ -190,13 +262,18 @@ const file_proto_jaegerGoTest_proto_rawDesc = "" +
 	"\x18proto/jaegerGoTest.proto\x12\fjaegerGoTest\x1a\x1fgoogle/api/field_behavior.proto\x1a\x17validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\"\x1b\n" +
 	"\x19StreamedContinuousRequest\"2\n" +
 	"\x1aStreamedContinuousResponse\x12\x14\n" +
-	"\x05value\x18\x01 \x01(\x05R\x05value\"\x19\n" +
+	"\x05value\x18\x01 \x01(\x05R\x05value\"\x11\n" +
+	"\x0fPanicCausingReq\"\x11\n" +
+	"\x0fPanicCausingRes\"\x19\n" +
 	"\x17StreamedSporadicRequest\"0\n" +
 	"\x18StreamedSporadicResponse\x12\x14\n" +
-	"\x05value\x18\x01 \x01(\x05R\x05value2\x99\x02\n" +
+	"\x05value\x18\x01 \x01(\x05R\x05value2\xed\x03\n" +
 	"\fJaegerGoTest\x12\x87\x01\n" +
 	"\x12StreamedContinuous\x12'.jaegerGoTest.StreamedContinuousRequest\x1a(.jaegerGoTest.StreamedContinuousResponse\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/streamed-continuous0\x01\x12\x7f\n" +
-	"\x10StreamedSporadic\x12%.jaegerGoTest.StreamedSporadicRequest\x1a&.jaegerGoTest.StreamedSporadicResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/streamed-sporadic0\x01B%Z#github.com/miparnisari/jaegerGoTestb\x06proto3"
+	"\x10StreamedSporadic\x12%.jaegerGoTest.StreamedSporadicRequest\x1a&.jaegerGoTest.StreamedSporadicResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/streamed-sporadic0\x01\x12\\\n" +
+	"\n" +
+	"CausePanic\x12\x1d.jaegerGoTest.PanicCausingReq\x1a\x1d.jaegerGoTest.PanicCausingRes\"\x0e\x82\xd3\xe4\x93\x02\b\x12\x06/panic0\x01\x12t\n" +
+	"\x15CausePanicInGoroutine\x12\x1d.jaegerGoTest.PanicCausingReq\x1a\x1d.jaegerGoTest.PanicCausingRes\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/panic-in-goroutine0\x01B%Z#github.com/miparnisari/jaegerGoTestb\x06proto3"
 
 var (
 	file_proto_jaegerGoTest_proto_rawDescOnce sync.Once
@@ -210,20 +287,26 @@ func file_proto_jaegerGoTest_proto_rawDescGZIP() []byte {
 	return file_proto_jaegerGoTest_proto_rawDescData
 }
 
-var file_proto_jaegerGoTest_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_proto_jaegerGoTest_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_proto_jaegerGoTest_proto_goTypes = []any{
 	(*StreamedContinuousRequest)(nil),  // 0: jaegerGoTest.StreamedContinuousRequest
 	(*StreamedContinuousResponse)(nil), // 1: jaegerGoTest.StreamedContinuousResponse
-	(*StreamedSporadicRequest)(nil),    // 2: jaegerGoTest.StreamedSporadicRequest
-	(*StreamedSporadicResponse)(nil),   // 3: jaegerGoTest.StreamedSporadicResponse
+	(*PanicCausingReq)(nil),            // 2: jaegerGoTest.PanicCausingReq
+	(*PanicCausingRes)(nil),            // 3: jaegerGoTest.PanicCausingRes
+	(*StreamedSporadicRequest)(nil),    // 4: jaegerGoTest.StreamedSporadicRequest
+	(*StreamedSporadicResponse)(nil),   // 5: jaegerGoTest.StreamedSporadicResponse
 }
 var file_proto_jaegerGoTest_proto_depIdxs = []int32{
 	0, // 0: jaegerGoTest.JaegerGoTest.StreamedContinuous:input_type -> jaegerGoTest.StreamedContinuousRequest
-	2, // 1: jaegerGoTest.JaegerGoTest.StreamedSporadic:input_type -> jaegerGoTest.StreamedSporadicRequest
-	1, // 2: jaegerGoTest.JaegerGoTest.StreamedContinuous:output_type -> jaegerGoTest.StreamedContinuousResponse
-	3, // 3: jaegerGoTest.JaegerGoTest.StreamedSporadic:output_type -> jaegerGoTest.StreamedSporadicResponse
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
+	4, // 1: jaegerGoTest.JaegerGoTest.StreamedSporadic:input_type -> jaegerGoTest.StreamedSporadicRequest
+	2, // 2: jaegerGoTest.JaegerGoTest.CausePanic:input_type -> jaegerGoTest.PanicCausingReq
+	2, // 3: jaegerGoTest.JaegerGoTest.CausePanicInGoroutine:input_type -> jaegerGoTest.PanicCausingReq
+	1, // 4: jaegerGoTest.JaegerGoTest.StreamedContinuous:output_type -> jaegerGoTest.StreamedContinuousResponse
+	5, // 5: jaegerGoTest.JaegerGoTest.StreamedSporadic:output_type -> jaegerGoTest.StreamedSporadicResponse
+	3, // 6: jaegerGoTest.JaegerGoTest.CausePanic:output_type -> jaegerGoTest.PanicCausingRes
+	3, // 7: jaegerGoTest.JaegerGoTest.CausePanicInGoroutine:output_type -> jaegerGoTest.PanicCausingRes
+	4, // [4:8] is the sub-list for method output_type
+	0, // [0:4] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -240,7 +323,7 @@ func file_proto_jaegerGoTest_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_jaegerGoTest_proto_rawDesc), len(file_proto_jaegerGoTest_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

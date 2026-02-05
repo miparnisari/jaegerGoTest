@@ -1,6 +1,6 @@
 module jaegerGoTest
 
-go 1.24.0
+go 1.25.0
 
 require (
 	github.com/envoyproxy/protoc-gen-validate v1.2.1

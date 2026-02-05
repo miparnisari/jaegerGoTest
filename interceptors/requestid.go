@@ -33,7 +33,7 @@ func (r *reporter) PostMsgReceive(msg interface{}, err error, _ time.Duration) {
 	if err != nil {
 		fmt.Println("error setting header", err)
 	} else {
-		fmt.Println("set header request-id")
+		fmt.Println("set header request-id:", requestID)
 	}
 }
 

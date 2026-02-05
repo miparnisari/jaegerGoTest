@@ -11,6 +11,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -31,11 +32,19 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
+	panicRecovery := interceptors.PanicRecoveryHandler()
+
 	unaryInterceptors := []grpc.UnaryServerInterceptor{
+		recovery.UnaryServerInterceptor(
+			recovery.WithRecoveryHandlerContext(panicRecovery),
+		),
 		interceptors.NewStoreIDUnaryInterceptor(),
 	}
 
 	streamInterceptors := []grpc.StreamServerInterceptor{
+		recovery.StreamServerInterceptor(
+			recovery.WithRecoveryHandlerContext(panicRecovery),
+		),
 		interceptors.NewStoreIDStreamingInterceptor(),
 	}
 
@@ -106,6 +115,21 @@ func main() {
 	<-ctx.Done()
 }
 
+func (s *MyServer) CausePanic(in *jaegerGoTest.PanicCausingReq, out grpc.ServerStreamingServer[jaegerGoTest.PanicCausingRes]) error {
+	causePanic()
+	return nil
+}
+
+func (s *MyServer) CausePanicInGoroutine(in *jaegerGoTest.PanicCausingReq, out grpc.ServerStreamingServer[jaegerGoTest.PanicCausingRes]) error {
+	done := make(chan bool)
+	go func() {
+		defer func() { done <- true }()
+		causePanic()
+	}()
+	<-done
+	return nil
+}
+
 func (s *MyServer) StreamedContinuous(in *jaegerGoTest.StreamedContinuousRequest, stream jaegerGoTest.JaegerGoTest_StreamedContinuousServer) error {
 	s.counterContinuous.Store(0)
 	for {
@@ -130,4 +154,9 @@ func (s *MyServer) StreamedSporadic(in *jaegerGoTest.StreamedSporadicRequest, st
 		}
 		time.Sleep(5 * time.Second)
 	}
+}
+
+func causePanic() {
+	arr := []string{"1", "2", "3"}
+	fmt.Println(arr[3])
 }

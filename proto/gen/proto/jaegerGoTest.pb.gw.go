@@ -75,6 +75,46 @@ func request_JaegerGoTest_StreamedSporadic_0(ctx context.Context, marshaler runt
 	return stream, metadata, nil
 }
 
+func request_JaegerGoTest_CausePanic_0(ctx context.Context, marshaler runtime.Marshaler, client JaegerGoTestClient, req *http.Request, pathParams map[string]string) (JaegerGoTest_CausePanicClient, runtime.ServerMetadata, error) {
+	var (
+		protoReq PanicCausingReq
+		metadata runtime.ServerMetadata
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	stream, err := client.CausePanic(ctx, &protoReq)
+	if err != nil {
+		return nil, metadata, err
+	}
+	header, err := stream.Header()
+	if err != nil {
+		return nil, metadata, err
+	}
+	metadata.HeaderMD = header
+	return stream, metadata, nil
+}
+
+func request_JaegerGoTest_CausePanicInGoroutine_0(ctx context.Context, marshaler runtime.Marshaler, client JaegerGoTestClient, req *http.Request, pathParams map[string]string) (JaegerGoTest_CausePanicInGoroutineClient, runtime.ServerMetadata, error) {
+	var (
+		protoReq PanicCausingReq
+		metadata runtime.ServerMetadata
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	stream, err := client.CausePanicInGoroutine(ctx, &protoReq)
+	if err != nil {
+		return nil, metadata, err
+	}
+	header, err := stream.Header()
+	if err != nil {
+		return nil, metadata, err
+	}
+	metadata.HeaderMD = header
+	return stream, metadata, nil
+}
+
 // RegisterJaegerGoTestHandlerServer registers the http handlers for service JaegerGoTest to "mux".
 // UnaryRPC     :call JaegerGoTestServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
@@ -89,6 +129,20 @@ func RegisterJaegerGoTestHandlerServer(ctx context.Context, mux *runtime.ServeMu
 	})
 
 	mux.Handle(http.MethodGet, pattern_JaegerGoTest_StreamedSporadic_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		err := status.Error(codes.Unimplemented, "streaming calls are not yet supported in the in-process transport")
+		_, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+		return
+	})
+
+	mux.Handle(http.MethodGet, pattern_JaegerGoTest_CausePanic_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		err := status.Error(codes.Unimplemented, "streaming calls are not yet supported in the in-process transport")
+		_, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+		return
+	})
+
+	mux.Handle(http.MethodGet, pattern_JaegerGoTest_CausePanicInGoroutine_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		err := status.Error(codes.Unimplemented, "streaming calls are not yet supported in the in-process transport")
 		_, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -168,15 +222,53 @@ func RegisterJaegerGoTestHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		}
 		forward_JaegerGoTest_StreamedSporadic_0(annotatedContext, mux, outboundMarshaler, w, req, func() (proto.Message, error) { return resp.Recv() }, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodGet, pattern_JaegerGoTest_CausePanic_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/jaegerGoTest.JaegerGoTest/CausePanic", runtime.WithHTTPPathPattern("/panic"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_JaegerGoTest_CausePanic_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_JaegerGoTest_CausePanic_0(annotatedContext, mux, outboundMarshaler, w, req, func() (proto.Message, error) { return resp.Recv() }, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodGet, pattern_JaegerGoTest_CausePanicInGoroutine_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/jaegerGoTest.JaegerGoTest/CausePanicInGoroutine", runtime.WithHTTPPathPattern("/panic-in-goroutine"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_JaegerGoTest_CausePanicInGoroutine_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_JaegerGoTest_CausePanicInGoroutine_0(annotatedContext, mux, outboundMarshaler, w, req, func() (proto.Message, error) { return resp.Recv() }, mux.GetForwardResponseOptions()...)
+	})
 	return nil
 }
 
 var (
-	pattern_JaegerGoTest_StreamedContinuous_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"streamed-continuous"}, ""))
-	pattern_JaegerGoTest_StreamedSporadic_0   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"streamed-sporadic"}, ""))
+	pattern_JaegerGoTest_StreamedContinuous_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"streamed-continuous"}, ""))
+	pattern_JaegerGoTest_StreamedSporadic_0      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"streamed-sporadic"}, ""))
+	pattern_JaegerGoTest_CausePanic_0            = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"panic"}, ""))
+	pattern_JaegerGoTest_CausePanicInGoroutine_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"panic-in-goroutine"}, ""))
 )
 
 var (
-	forward_JaegerGoTest_StreamedContinuous_0 = runtime.ForwardResponseStream
-	forward_JaegerGoTest_StreamedSporadic_0   = runtime.ForwardResponseStream
+	forward_JaegerGoTest_StreamedContinuous_0    = runtime.ForwardResponseStream
+	forward_JaegerGoTest_StreamedSporadic_0      = runtime.ForwardResponseStream
+	forward_JaegerGoTest_CausePanic_0            = runtime.ForwardResponseStream
+	forward_JaegerGoTest_CausePanicInGoroutine_0 = runtime.ForwardResponseStream
 )
