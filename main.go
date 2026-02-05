@@ -14,6 +14,7 @@ import (
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
@@ -23,8 +24,12 @@ import (
 	jaegerGoTest "jaegerGoTest/proto/gen/proto"
 )
 
-type MyServer struct {
-	jaegerGoTest.UnimplementedJaegerGoTestServer
+type MyPanicServer struct {
+	jaegerGoTest.UnimplementedPanicServiceServer
+}
+
+type MyStreamingService struct {
+	jaegerGoTest.UnimplementedStreamingServiceServer
 	counterContinuous, counterSporadic atomic.Int32
 }
 
@@ -38,25 +43,25 @@ func main() {
 		recovery.UnaryServerInterceptor(
 			recovery.WithRecoveryHandlerContext(panicRecovery),
 		),
-		interceptors.NewStoreIDUnaryInterceptor(),
+		interceptors.NewRequestIDUnaryInterceptor(),
 	}
 
 	streamInterceptors := []grpc.StreamServerInterceptor{
 		recovery.StreamServerInterceptor(
 			recovery.WithRecoveryHandlerContext(panicRecovery),
 		),
-		interceptors.NewStoreIDStreamingInterceptor(),
+		interceptors.NewRequestIDStreamingInterceptor(),
 	}
 
 	// Create gRPC server
-	service := &MyServer{}
 	opts := []grpc.ServerOption{
 		grpc.ChainUnaryInterceptor(unaryInterceptors...),
 		grpc.ChainStreamInterceptor(streamInterceptors...),
 		grpc.KeepaliveParams(keepalive.ServerParameters{}),
 	}
 	grpcServer := grpc.NewServer(opts...)
-	jaegerGoTest.RegisterJaegerGoTestServer(grpcServer, service)
+	jaegerGoTest.RegisterPanicServiceServer(grpcServer, &MyPanicServer{})
+	jaegerGoTest.RegisterStreamingServiceServer(grpcServer, &MyStreamingService{})
 	reflection.Register(grpcServer)
 
 	lis, err := net.Listen("tcp", ":8081")
@@ -64,11 +69,14 @@ func main() {
 		panic(err)
 	}
 
+	grpcDone := make(chan bool)
 	go func() {
+		defer close(grpcDone)
 		fmt.Println(fmt.Sprintf("grpc server listening on 8081"))
 		if err := grpcServer.Serve(lis); err != nil {
 			fmt.Errorf("failed to start gRPC server: %w", err)
 		}
+		fmt.Println("gRPC server stopped serving")
 	}()
 
 	dialOpts := []grpc.DialOption{
@@ -87,13 +95,17 @@ func main() {
 		}),
 	}
 
-	//runtime.DefaultContextTimeout = 50 * time.Millisecond
+	//runtime.DefaultContextTimeout = 10 * time.Second
 	mux := runtime.NewServeMux(muxOpts...)
 
 	// Create reverse proxy http -> GRPC
-	err = jaegerGoTest.RegisterJaegerGoTestHandlerFromEndpoint(ctx, mux, fmt.Sprintf("localhost:8081"), dialOpts)
+	err = jaegerGoTest.RegisterPanicServiceHandlerFromEndpoint(ctx, mux, fmt.Sprintf("localhost:8081"), dialOpts)
 	if err != nil {
-		return
+		panic(err)
+	}
+	err = jaegerGoTest.RegisterStreamingServiceHandlerFromEndpoint(ctx, mux, fmt.Sprintf("localhost:8081"), dialOpts)
+	if err != nil {
+		panic(err)
 	}
 
 	httpServer := &http.Server{
@@ -101,26 +113,47 @@ func main() {
 		Handler: mux,
 	}
 
-	httpServer.RegisterOnShutdown(func() {
-		grpcServer.GracefulStop()
-	})
-
+	httpDone := make(chan bool)
 	go func() {
+		defer close(httpDone)
 		fmt.Println(fmt.Sprintf("HTTP server listening on 8080"))
 		if err := httpServer.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
 			fmt.Errorf("failed to start HTTP server: %w", err)
 		}
+		fmt.Println("HTTP server stopped serving")
 	}()
 
 	<-ctx.Done()
+	fmt.Println("initiating shutdown...")
+
+	shutdownGraceful := make(chan struct{})
+	go func() {
+		grpcServer.GracefulStop()
+		fmt.Println("gRPC server shutdown gracefully")
+		close(shutdownGraceful)
+	}()
+
+	select {
+	case <-shutdownGraceful:
+	case <-time.After(10 * time.Second):
+		fmt.Println("timeout waiting for server to shutdown gracefully; forcing shutdown")
+		grpcServer.Stop()
+	}
+
+	httpServer.Shutdown(context.Background())
+
+	<-httpDone
+	<-grpcDone
+
+	fmt.Printf("good bye!")
 }
 
-func (s *MyServer) CausePanic(in *jaegerGoTest.PanicCausingReq, out grpc.ServerStreamingServer[jaegerGoTest.PanicCausingRes]) error {
+func (s *MyPanicServer) CausePanic(in *jaegerGoTest.PanicCausingReq, out grpc.ServerStreamingServer[jaegerGoTest.PanicCausingRes]) error {
 	causePanic()
 	return nil
 }
 
-func (s *MyServer) CausePanicInGoroutine(in *jaegerGoTest.PanicCausingReq, out grpc.ServerStreamingServer[jaegerGoTest.PanicCausingRes]) error {
+func (s *MyPanicServer) CausePanicInGoroutine(in *jaegerGoTest.PanicCausingReq, out grpc.ServerStreamingServer[jaegerGoTest.PanicCausingRes]) error {
 	done := make(chan bool)
 	go func() {
 		defer func() { done <- true }()
@@ -130,29 +163,39 @@ func (s *MyServer) CausePanicInGoroutine(in *jaegerGoTest.PanicCausingReq, out g
 	return nil
 }
 
-func (s *MyServer) StreamedContinuous(in *jaegerGoTest.StreamedContinuousRequest, stream jaegerGoTest.JaegerGoTest_StreamedContinuousServer) error {
+func (s *MyStreamingService) StreamedContinuous(in *jaegerGoTest.StreamedContinuousRequest, stream jaegerGoTest.StreamingService_StreamedContinuousServer) error {
 	s.counterContinuous.Store(0)
 	for {
-		fmt.Println("Sending response", s.counterContinuous.Add(1))
-		err := stream.Send(&jaegerGoTest.StreamedContinuousResponse{Value: s.counterContinuous.Load()})
-		if err != nil {
-			fmt.Println("stream send error:", err)
-			return err
+		select {
+		case <-stream.Context().Done():
+			fmt.Println("stream context had an error:", stream.Context().Err())
+			return status.Error(codes.Unknown, "stream context had an error")
+		case <-time.After(5 * time.Millisecond):
+			fmt.Println("Sending response", s.counterContinuous.Add(1))
+			err := stream.Send(&jaegerGoTest.StreamedContinuousResponse{Value: s.counterContinuous.Load()})
+			if err != nil {
+				fmt.Println("stream send error:", err)
+				return err
+			}
 		}
-		time.Sleep(10 * time.Millisecond)
 	}
 }
 
-func (s *MyServer) StreamedSporadic(in *jaegerGoTest.StreamedSporadicRequest, stream jaegerGoTest.JaegerGoTest_StreamedSporadicServer) error {
+func (s *MyStreamingService) StreamedSporadic(in *jaegerGoTest.StreamedSporadicRequest, stream jaegerGoTest.StreamingService_StreamedSporadicServer) error {
 	s.counterSporadic.Store(0)
 	for {
-		fmt.Println("Sending response", s.counterSporadic.Add(1))
-		err := stream.Send(&jaegerGoTest.StreamedSporadicResponse{Value: s.counterSporadic.Load()})
-		if err != nil {
-			fmt.Println("stream send error:", err)
-			return err
+		select {
+		case <-stream.Context().Done():
+			fmt.Println("stream context had an error:", stream.Context().Err())
+			return status.Error(codes.Unknown, "stream context had an error")
+		case <-time.After(5 * time.Second):
+			fmt.Println("Sending response", s.counterSporadic.Add(1))
+			err := stream.Send(&jaegerGoTest.StreamedSporadicResponse{Value: s.counterSporadic.Load()})
+			if err != nil {
+				fmt.Println("stream send error:", err)
+				return err
+			}
 		}
-		time.Sleep(5 * time.Second)
 	}
 }
 

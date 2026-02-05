@@ -26,19 +26,7 @@ message StreamedSporadicResponse {
   int32 value = 1;
 }
 
-service JaegerGoTest {
-  rpc StreamedContinuous(StreamedContinuousRequest) returns (stream StreamedContinuousResponse) {
-    option (google.api.http) = {
-      get: "/streamed-continuous"
-    };
-  }
-
-  rpc StreamedSporadic(StreamedSporadicRequest) returns (stream StreamedSporadicResponse) {
-    option (google.api.http) = {
-      get: "/streamed-sporadic"
-    };
-  }
-
+service PanicService {
   rpc CausePanic(PanicCausingReq) returns (stream PanicCausingRes) {
     option (google.api.http) = {
       get: "/panic"
@@ -48,6 +36,20 @@ service JaegerGoTest {
   rpc CausePanicInGoroutine(PanicCausingReq) returns (stream PanicCausingRes) {
     option (google.api.http) = {
       get: "/panic-in-goroutine"
+    };
+  }
+}
+
+service StreamingService {
+  rpc StreamedContinuous(StreamedContinuousRequest) returns (stream StreamedContinuousResponse) {
+    option (google.api.http) = {
+      get: "/streamed-continuous"
+    };
+  }
+
+  rpc StreamedSporadic(StreamedSporadicRequest) returns (stream StreamedSporadicResponse) {
+    option (google.api.http) = {
+      get: "/streamed-sporadic"
     };
   }
 }

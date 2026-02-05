@@ -11,7 +11,7 @@ import (
 
 func PanicRecoveryHandler() recovery.RecoveryHandlerFuncContext {
 	return func(ctx context.Context, p interface{}) error {
-		fmt.Println("panic")
-		return status.Errorf(codes.Unknown, "panic triggered: %v", p)
+		fmt.Printf("panic recovery handler caught a panic: %v\n", p)
+		return status.Error(codes.Unknown, "something bad happened")
 	}
 }

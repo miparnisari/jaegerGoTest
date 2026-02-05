@@ -267,13 +267,14 @@ const file_proto_jaegerGoTest_proto_rawDesc = "" +
 	"\x0fPanicCausingRes\"\x19\n" +
 	"\x17StreamedSporadicRequest\"0\n" +
 	"\x18StreamedSporadicResponse\x12\x14\n" +
-	"\x05value\x18\x01 \x01(\x05R\x05value2\xed\x03\n" +
-	"\fJaegerGoTest\x12\x87\x01\n" +
-	"\x12StreamedContinuous\x12'.jaegerGoTest.StreamedContinuousRequest\x1a(.jaegerGoTest.StreamedContinuousResponse\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/streamed-continuous0\x01\x12\x7f\n" +
-	"\x10StreamedSporadic\x12%.jaegerGoTest.StreamedSporadicRequest\x1a&.jaegerGoTest.StreamedSporadicResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/streamed-sporadic0\x01\x12\\\n" +
+	"\x05value\x18\x01 \x01(\x05R\x05value2\xe2\x01\n" +
+	"\fPanicService\x12\\\n" +
 	"\n" +
 	"CausePanic\x12\x1d.jaegerGoTest.PanicCausingReq\x1a\x1d.jaegerGoTest.PanicCausingRes\"\x0e\x82\xd3\xe4\x93\x02\b\x12\x06/panic0\x01\x12t\n" +
-	"\x15CausePanicInGoroutine\x12\x1d.jaegerGoTest.PanicCausingReq\x1a\x1d.jaegerGoTest.PanicCausingRes\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/panic-in-goroutine0\x01B%Z#github.com/miparnisari/jaegerGoTestb\x06proto3"
+	"\x15CausePanicInGoroutine\x12\x1d.jaegerGoTest.PanicCausingReq\x1a\x1d.jaegerGoTest.PanicCausingRes\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/panic-in-goroutine0\x012\x9d\x02\n" +
+	"\x10StreamingService\x12\x87\x01\n" +
+	"\x12StreamedContinuous\x12'.jaegerGoTest.StreamedContinuousRequest\x1a(.jaegerGoTest.StreamedContinuousResponse\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/streamed-continuous0\x01\x12\x7f\n" +
+	"\x10StreamedSporadic\x12%.jaegerGoTest.StreamedSporadicRequest\x1a&.jaegerGoTest.StreamedSporadicResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/streamed-sporadic0\x01B%Z#github.com/miparnisari/jaegerGoTestb\x06proto3"
 
 var (
 	file_proto_jaegerGoTest_proto_rawDescOnce sync.Once
@@ -297,14 +298,14 @@ var file_proto_jaegerGoTest_proto_goTypes = []any{
 	(*StreamedSporadicResponse)(nil),   // 5: jaegerGoTest.StreamedSporadicResponse
 }
 var file_proto_jaegerGoTest_proto_depIdxs = []int32{
-	0, // 0: jaegerGoTest.JaegerGoTest.StreamedContinuous:input_type -> jaegerGoTest.StreamedContinuousRequest
-	4, // 1: jaegerGoTest.JaegerGoTest.StreamedSporadic:input_type -> jaegerGoTest.StreamedSporadicRequest
-	2, // 2: jaegerGoTest.JaegerGoTest.CausePanic:input_type -> jaegerGoTest.PanicCausingReq
-	2, // 3: jaegerGoTest.JaegerGoTest.CausePanicInGoroutine:input_type -> jaegerGoTest.PanicCausingReq
-	1, // 4: jaegerGoTest.JaegerGoTest.StreamedContinuous:output_type -> jaegerGoTest.StreamedContinuousResponse
-	5, // 5: jaegerGoTest.JaegerGoTest.StreamedSporadic:output_type -> jaegerGoTest.StreamedSporadicResponse
-	3, // 6: jaegerGoTest.JaegerGoTest.CausePanic:output_type -> jaegerGoTest.PanicCausingRes
-	3, // 7: jaegerGoTest.JaegerGoTest.CausePanicInGoroutine:output_type -> jaegerGoTest.PanicCausingRes
+	2, // 0: jaegerGoTest.PanicService.CausePanic:input_type -> jaegerGoTest.PanicCausingReq
+	2, // 1: jaegerGoTest.PanicService.CausePanicInGoroutine:input_type -> jaegerGoTest.PanicCausingReq
+	0, // 2: jaegerGoTest.StreamingService.StreamedContinuous:input_type -> jaegerGoTest.StreamedContinuousRequest
+	4, // 3: jaegerGoTest.StreamingService.StreamedSporadic:input_type -> jaegerGoTest.StreamedSporadicRequest
+	3, // 4: jaegerGoTest.PanicService.CausePanic:output_type -> jaegerGoTest.PanicCausingRes
+	3, // 5: jaegerGoTest.PanicService.CausePanicInGoroutine:output_type -> jaegerGoTest.PanicCausingRes
+	1, // 6: jaegerGoTest.StreamingService.StreamedContinuous:output_type -> jaegerGoTest.StreamedContinuousResponse
+	5, // 7: jaegerGoTest.StreamingService.StreamedSporadic:output_type -> jaegerGoTest.StreamedSporadicResponse
 	4, // [4:8] is the sub-list for method output_type
 	0, // [0:4] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -325,7 +326,7 @@ func file_proto_jaegerGoTest_proto_init() {
 			NumEnums:      0,
 			NumMessages:   6,
 			NumExtensions: 0,
-			NumServices:   1,
+			NumServices:   2,
 		},
 		GoTypes:           file_proto_jaegerGoTest_proto_goTypes,
 		DependencyIndexes: file_proto_jaegerGoTest_proto_depIdxs,

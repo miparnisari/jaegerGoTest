@@ -19,33 +19,175 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	JaegerGoTest_StreamedContinuous_FullMethodName    = "/jaegerGoTest.JaegerGoTest/StreamedContinuous"
-	JaegerGoTest_StreamedSporadic_FullMethodName      = "/jaegerGoTest.JaegerGoTest/StreamedSporadic"
-	JaegerGoTest_CausePanic_FullMethodName            = "/jaegerGoTest.JaegerGoTest/CausePanic"
-	JaegerGoTest_CausePanicInGoroutine_FullMethodName = "/jaegerGoTest.JaegerGoTest/CausePanicInGoroutine"
+	PanicService_CausePanic_FullMethodName            = "/jaegerGoTest.PanicService/CausePanic"
+	PanicService_CausePanicInGoroutine_FullMethodName = "/jaegerGoTest.PanicService/CausePanicInGoroutine"
 )
 
-// JaegerGoTestClient is the client API for JaegerGoTest service.
+// PanicServiceClient is the client API for PanicService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type JaegerGoTestClient interface {
-	StreamedContinuous(ctx context.Context, in *StreamedContinuousRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamedContinuousResponse], error)
-	StreamedSporadic(ctx context.Context, in *StreamedSporadicRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamedSporadicResponse], error)
+type PanicServiceClient interface {
 	CausePanic(ctx context.Context, in *PanicCausingReq, opts ...grpc.CallOption) (grpc.ServerStreamingClient[PanicCausingRes], error)
 	CausePanicInGoroutine(ctx context.Context, in *PanicCausingReq, opts ...grpc.CallOption) (grpc.ServerStreamingClient[PanicCausingRes], error)
 }
 
-type jaegerGoTestClient struct {
+type panicServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewJaegerGoTestClient(cc grpc.ClientConnInterface) JaegerGoTestClient {
-	return &jaegerGoTestClient{cc}
+func NewPanicServiceClient(cc grpc.ClientConnInterface) PanicServiceClient {
+	return &panicServiceClient{cc}
 }
 
-func (c *jaegerGoTestClient) StreamedContinuous(ctx context.Context, in *StreamedContinuousRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamedContinuousResponse], error) {
+func (c *panicServiceClient) CausePanic(ctx context.Context, in *PanicCausingReq, opts ...grpc.CallOption) (grpc.ServerStreamingClient[PanicCausingRes], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &JaegerGoTest_ServiceDesc.Streams[0], JaegerGoTest_StreamedContinuous_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &PanicService_ServiceDesc.Streams[0], PanicService_CausePanic_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[PanicCausingReq, PanicCausingRes]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type PanicService_CausePanicClient = grpc.ServerStreamingClient[PanicCausingRes]
+
+func (c *panicServiceClient) CausePanicInGoroutine(ctx context.Context, in *PanicCausingReq, opts ...grpc.CallOption) (grpc.ServerStreamingClient[PanicCausingRes], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &PanicService_ServiceDesc.Streams[1], PanicService_CausePanicInGoroutine_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[PanicCausingReq, PanicCausingRes]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type PanicService_CausePanicInGoroutineClient = grpc.ServerStreamingClient[PanicCausingRes]
+
+// PanicServiceServer is the server API for PanicService service.
+// All implementations must embed UnimplementedPanicServiceServer
+// for forward compatibility.
+type PanicServiceServer interface {
+	CausePanic(*PanicCausingReq, grpc.ServerStreamingServer[PanicCausingRes]) error
+	CausePanicInGoroutine(*PanicCausingReq, grpc.ServerStreamingServer[PanicCausingRes]) error
+	mustEmbedUnimplementedPanicServiceServer()
+}
+
+// UnimplementedPanicServiceServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedPanicServiceServer struct{}
+
+func (UnimplementedPanicServiceServer) CausePanic(*PanicCausingReq, grpc.ServerStreamingServer[PanicCausingRes]) error {
+	return status.Errorf(codes.Unimplemented, "method CausePanic not implemented")
+}
+func (UnimplementedPanicServiceServer) CausePanicInGoroutine(*PanicCausingReq, grpc.ServerStreamingServer[PanicCausingRes]) error {
+	return status.Errorf(codes.Unimplemented, "method CausePanicInGoroutine not implemented")
+}
+func (UnimplementedPanicServiceServer) mustEmbedUnimplementedPanicServiceServer() {}
+func (UnimplementedPanicServiceServer) testEmbeddedByValue()                      {}
+
+// UnsafePanicServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to PanicServiceServer will
+// result in compilation errors.
+type UnsafePanicServiceServer interface {
+	mustEmbedUnimplementedPanicServiceServer()
+}
+
+func RegisterPanicServiceServer(s grpc.ServiceRegistrar, srv PanicServiceServer) {
+	// If the following call pancis, it indicates UnimplementedPanicServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&PanicService_ServiceDesc, srv)
+}
+
+func _PanicService_CausePanic_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(PanicCausingReq)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(PanicServiceServer).CausePanic(m, &grpc.GenericServerStream[PanicCausingReq, PanicCausingRes]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type PanicService_CausePanicServer = grpc.ServerStreamingServer[PanicCausingRes]
+
+func _PanicService_CausePanicInGoroutine_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(PanicCausingReq)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(PanicServiceServer).CausePanicInGoroutine(m, &grpc.GenericServerStream[PanicCausingReq, PanicCausingRes]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type PanicService_CausePanicInGoroutineServer = grpc.ServerStreamingServer[PanicCausingRes]
+
+// PanicService_ServiceDesc is the grpc.ServiceDesc for PanicService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var PanicService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "jaegerGoTest.PanicService",
+	HandlerType: (*PanicServiceServer)(nil),
+	Methods:     []grpc.MethodDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "CausePanic",
+			Handler:       _PanicService_CausePanic_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "CausePanicInGoroutine",
+			Handler:       _PanicService_CausePanicInGoroutine_Handler,
+			ServerStreams: true,
+		},
+	},
+	Metadata: "proto/jaegerGoTest.proto",
+}
+
+const (
+	StreamingService_StreamedContinuous_FullMethodName = "/jaegerGoTest.StreamingService/StreamedContinuous"
+	StreamingService_StreamedSporadic_FullMethodName   = "/jaegerGoTest.StreamingService/StreamedSporadic"
+)
+
+// StreamingServiceClient is the client API for StreamingService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type StreamingServiceClient interface {
+	StreamedContinuous(ctx context.Context, in *StreamedContinuousRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamedContinuousResponse], error)
+	StreamedSporadic(ctx context.Context, in *StreamedSporadicRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamedSporadicResponse], error)
+}
+
+type streamingServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewStreamingServiceClient(cc grpc.ClientConnInterface) StreamingServiceClient {
+	return &streamingServiceClient{cc}
+}
+
+func (c *streamingServiceClient) StreamedContinuous(ctx context.Context, in *StreamedContinuousRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamedContinuousResponse], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &StreamingService_ServiceDesc.Streams[0], StreamingService_StreamedContinuous_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -60,11 +202,11 @@ func (c *jaegerGoTestClient) StreamedContinuous(ctx context.Context, in *Streame
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type JaegerGoTest_StreamedContinuousClient = grpc.ServerStreamingClient[StreamedContinuousResponse]
+type StreamingService_StreamedContinuousClient = grpc.ServerStreamingClient[StreamedContinuousResponse]
 
-func (c *jaegerGoTestClient) StreamedSporadic(ctx context.Context, in *StreamedSporadicRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamedSporadicResponse], error) {
+func (c *streamingServiceClient) StreamedSporadic(ctx context.Context, in *StreamedSporadicRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamedSporadicResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &JaegerGoTest_ServiceDesc.Streams[1], JaegerGoTest_StreamedSporadic_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &StreamingService_ServiceDesc.Streams[1], StreamingService_StreamedSporadic_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -79,167 +221,89 @@ func (c *jaegerGoTestClient) StreamedSporadic(ctx context.Context, in *StreamedS
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type JaegerGoTest_StreamedSporadicClient = grpc.ServerStreamingClient[StreamedSporadicResponse]
+type StreamingService_StreamedSporadicClient = grpc.ServerStreamingClient[StreamedSporadicResponse]
 
-func (c *jaegerGoTestClient) CausePanic(ctx context.Context, in *PanicCausingReq, opts ...grpc.CallOption) (grpc.ServerStreamingClient[PanicCausingRes], error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &JaegerGoTest_ServiceDesc.Streams[2], JaegerGoTest_CausePanic_FullMethodName, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &grpc.GenericClientStream[PanicCausingReq, PanicCausingRes]{ClientStream: stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type JaegerGoTest_CausePanicClient = grpc.ServerStreamingClient[PanicCausingRes]
-
-func (c *jaegerGoTestClient) CausePanicInGoroutine(ctx context.Context, in *PanicCausingReq, opts ...grpc.CallOption) (grpc.ServerStreamingClient[PanicCausingRes], error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &JaegerGoTest_ServiceDesc.Streams[3], JaegerGoTest_CausePanicInGoroutine_FullMethodName, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &grpc.GenericClientStream[PanicCausingReq, PanicCausingRes]{ClientStream: stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type JaegerGoTest_CausePanicInGoroutineClient = grpc.ServerStreamingClient[PanicCausingRes]
-
-// JaegerGoTestServer is the server API for JaegerGoTest service.
-// All implementations must embed UnimplementedJaegerGoTestServer
+// StreamingServiceServer is the server API for StreamingService service.
+// All implementations must embed UnimplementedStreamingServiceServer
 // for forward compatibility.
-type JaegerGoTestServer interface {
+type StreamingServiceServer interface {
 	StreamedContinuous(*StreamedContinuousRequest, grpc.ServerStreamingServer[StreamedContinuousResponse]) error
 	StreamedSporadic(*StreamedSporadicRequest, grpc.ServerStreamingServer[StreamedSporadicResponse]) error
-	CausePanic(*PanicCausingReq, grpc.ServerStreamingServer[PanicCausingRes]) error
-	CausePanicInGoroutine(*PanicCausingReq, grpc.ServerStreamingServer[PanicCausingRes]) error
-	mustEmbedUnimplementedJaegerGoTestServer()
+	mustEmbedUnimplementedStreamingServiceServer()
 }
 
-// UnimplementedJaegerGoTestServer must be embedded to have
+// UnimplementedStreamingServiceServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedJaegerGoTestServer struct{}
+type UnimplementedStreamingServiceServer struct{}
 
-func (UnimplementedJaegerGoTestServer) StreamedContinuous(*StreamedContinuousRequest, grpc.ServerStreamingServer[StreamedContinuousResponse]) error {
+func (UnimplementedStreamingServiceServer) StreamedContinuous(*StreamedContinuousRequest, grpc.ServerStreamingServer[StreamedContinuousResponse]) error {
 	return status.Errorf(codes.Unimplemented, "method StreamedContinuous not implemented")
 }
-func (UnimplementedJaegerGoTestServer) StreamedSporadic(*StreamedSporadicRequest, grpc.ServerStreamingServer[StreamedSporadicResponse]) error {
+func (UnimplementedStreamingServiceServer) StreamedSporadic(*StreamedSporadicRequest, grpc.ServerStreamingServer[StreamedSporadicResponse]) error {
 	return status.Errorf(codes.Unimplemented, "method StreamedSporadic not implemented")
 }
-func (UnimplementedJaegerGoTestServer) CausePanic(*PanicCausingReq, grpc.ServerStreamingServer[PanicCausingRes]) error {
-	return status.Errorf(codes.Unimplemented, "method CausePanic not implemented")
-}
-func (UnimplementedJaegerGoTestServer) CausePanicInGoroutine(*PanicCausingReq, grpc.ServerStreamingServer[PanicCausingRes]) error {
-	return status.Errorf(codes.Unimplemented, "method CausePanicInGoroutine not implemented")
-}
-func (UnimplementedJaegerGoTestServer) mustEmbedUnimplementedJaegerGoTestServer() {}
-func (UnimplementedJaegerGoTestServer) testEmbeddedByValue()                      {}
+func (UnimplementedStreamingServiceServer) mustEmbedUnimplementedStreamingServiceServer() {}
+func (UnimplementedStreamingServiceServer) testEmbeddedByValue()                          {}
 
-// UnsafeJaegerGoTestServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to JaegerGoTestServer will
+// UnsafeStreamingServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to StreamingServiceServer will
 // result in compilation errors.
-type UnsafeJaegerGoTestServer interface {
-	mustEmbedUnimplementedJaegerGoTestServer()
+type UnsafeStreamingServiceServer interface {
+	mustEmbedUnimplementedStreamingServiceServer()
 }
 
-func RegisterJaegerGoTestServer(s grpc.ServiceRegistrar, srv JaegerGoTestServer) {
-	// If the following call pancis, it indicates UnimplementedJaegerGoTestServer was
+func RegisterStreamingServiceServer(s grpc.ServiceRegistrar, srv StreamingServiceServer) {
+	// If the following call pancis, it indicates UnimplementedStreamingServiceServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&JaegerGoTest_ServiceDesc, srv)
+	s.RegisterService(&StreamingService_ServiceDesc, srv)
 }
 
-func _JaegerGoTest_StreamedContinuous_Handler(srv interface{}, stream grpc.ServerStream) error {
+func _StreamingService_StreamedContinuous_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(StreamedContinuousRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(JaegerGoTestServer).StreamedContinuous(m, &grpc.GenericServerStream[StreamedContinuousRequest, StreamedContinuousResponse]{ServerStream: stream})
+	return srv.(StreamingServiceServer).StreamedContinuous(m, &grpc.GenericServerStream[StreamedContinuousRequest, StreamedContinuousResponse]{ServerStream: stream})
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type JaegerGoTest_StreamedContinuousServer = grpc.ServerStreamingServer[StreamedContinuousResponse]
+type StreamingService_StreamedContinuousServer = grpc.ServerStreamingServer[StreamedContinuousResponse]
 
-func _JaegerGoTest_StreamedSporadic_Handler(srv interface{}, stream grpc.ServerStream) error {
+func _StreamingService_StreamedSporadic_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(StreamedSporadicRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(JaegerGoTestServer).StreamedSporadic(m, &grpc.GenericServerStream[StreamedSporadicRequest, StreamedSporadicResponse]{ServerStream: stream})
+	return srv.(StreamingServiceServer).StreamedSporadic(m, &grpc.GenericServerStream[StreamedSporadicRequest, StreamedSporadicResponse]{ServerStream: stream})
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type JaegerGoTest_StreamedSporadicServer = grpc.ServerStreamingServer[StreamedSporadicResponse]
+type StreamingService_StreamedSporadicServer = grpc.ServerStreamingServer[StreamedSporadicResponse]
 
-func _JaegerGoTest_CausePanic_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(PanicCausingReq)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(JaegerGoTestServer).CausePanic(m, &grpc.GenericServerStream[PanicCausingReq, PanicCausingRes]{ServerStream: stream})
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type JaegerGoTest_CausePanicServer = grpc.ServerStreamingServer[PanicCausingRes]
-
-func _JaegerGoTest_CausePanicInGoroutine_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(PanicCausingReq)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(JaegerGoTestServer).CausePanicInGoroutine(m, &grpc.GenericServerStream[PanicCausingReq, PanicCausingRes]{ServerStream: stream})
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type JaegerGoTest_CausePanicInGoroutineServer = grpc.ServerStreamingServer[PanicCausingRes]
-
-// JaegerGoTest_ServiceDesc is the grpc.ServiceDesc for JaegerGoTest service.
+// StreamingService_ServiceDesc is the grpc.ServiceDesc for StreamingService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var JaegerGoTest_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "jaegerGoTest.JaegerGoTest",
-	HandlerType: (*JaegerGoTestServer)(nil),
+var StreamingService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "jaegerGoTest.StreamingService",
+	HandlerType: (*StreamingServiceServer)(nil),
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "StreamedContinuous",
-			Handler:       _JaegerGoTest_StreamedContinuous_Handler,
+			Handler:       _StreamingService_StreamedContinuous_Handler,
 			ServerStreams: true,
 		},
 		{
 			StreamName:    "StreamedSporadic",
-			Handler:       _JaegerGoTest_StreamedSporadic_Handler,
-			ServerStreams: true,
-		},
-		{
-			StreamName:    "CausePanic",
-			Handler:       _JaegerGoTest_CausePanic_Handler,
-			ServerStreams: true,
-		},
-		{
-			StreamName:    "CausePanicInGoroutine",
-			Handler:       _JaegerGoTest_CausePanicInGoroutine_Handler,
+			Handler:       _StreamingService_StreamedSporadic_Handler,
 			ServerStreams: true,
 		},
 	},

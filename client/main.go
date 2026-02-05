@@ -35,14 +35,14 @@ func main() {
 	}
 	defer conn.Close()
 
-	client := jaegerGoTest.NewJaegerGoTestClient(conn)
+	client := jaegerGoTest.NewStreamingServiceClient(conn)
 
 	fmt.Printf("Connecting to %s\n", *serverAddr)
 	fmt.Println("Receiving streaming data... (Press Ctrl+C to stop)")
 
-	stream, err := client.StreamedContinuous(context.Background(), &jaegerGoTest.StreamedContinuousRequest{})
+	stream, err := client.StreamedSporadic(context.Background(), &jaegerGoTest.StreamedSporadicRequest{})
 	if err != nil {
-		log.Fatalf("Failed to call StreamedGetStoreID: %v", err)
+		log.Fatalf("Failed to call StreamedSporadic: %v", err)
 	}
 
 	for {

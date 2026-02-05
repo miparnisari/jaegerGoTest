@@ -11,11 +11,11 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-func NewStoreIDUnaryInterceptor() grpc.UnaryServerInterceptor {
+func NewRequestIDUnaryInterceptor() grpc.UnaryServerInterceptor {
 	return interceptors.UnaryServerInterceptor(reportable())
 }
 
-func NewStoreIDStreamingInterceptor() grpc.StreamServerInterceptor {
+func NewRequestIDStreamingInterceptor() grpc.StreamServerInterceptor {
 	return interceptors.StreamServerInterceptor(reportable())
 }
 
@@ -39,6 +39,7 @@ func (r *reporter) PostMsgReceive(msg interface{}, err error, _ time.Duration) {
 
 func reportable() interceptors.CommonReportableFunc {
 	return func(ctx context.Context, c interceptors.CallMeta) (interceptors.Reporter, context.Context) {
+		fmt.Printf("created reporter for %+v", c)
 		r := reporter{ctx}
 		return &r, r.ctx
 	}
